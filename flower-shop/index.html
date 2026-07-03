@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Petal & Stem – Fresh Flowers</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="container header-inner">
+        <a href="index.html" class="logo">
+            <img src="img/logo.png" alt="Petal &amp; Stem logo">
+        </a>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        <button class="nav-toggle" aria-label="Open navigation menu">
+            ☰
+        </button>
+    </div>
+</header>
+
+<main>
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <picture>
+            <source srcset="img/hero.webp" type="image/webp">
+            <img src="img/hero.jpg" alt="A bright arrangement of roses and lilies" loading="lazy">
+        </picture>
+        <div class="hero-content container">
+            <h1>Brighten Every Moment</h1>
+            <p>Hand‑crafted bouquets, same‑day delivery</p>
+            <a href="#shop" class="btn-primary">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- FEATURED BOUQUETS -->
+    <section id="shop" class="featured container">
+        <h2>Featured Bouquets</h2>
+        <div class="grid">
+            <article class="card">
+                <img src="img/bouquet1.jpg" alt="Red roses bouquet" loading="lazy">
+                <h3>Romantic Roses</h3>
+                <p class="price">$45.00</p>
+                <button class="btn-outline add-to-cart" data-id="1">Add to Cart</button>
+            </article>
+
+            <article class="card">
+                <img src="img/bouquet2.jpg" alt="Mixed spring flowers" loading="lazy">
+                <h3>Spring Delight</h3>
+                <p class="price">$38.00</p>
+                <button class="btn-outline add-to-cart" data-id="2">Add to Cart</button>
+            </article>
+
+            <article class="card">
+                <img src="img/bouquet3.jpg" alt="Sunflower & wildflower arrangement" loading="lazy">
+                <h3>Sunny Sunshine</h3>
+                <p class="price">$42.00</p>
+                <button class="btn-outline add-to-cart" data-id="3">Add to Cart</button>
+            </article>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonials container">
+        <h2>What Our Customers Say</h2>
+        <div class="grid">
+            <blockquote>
+                <p>“The roses were fresh and beautifully arranged. My wife loved them!”</p>
+                <cite>— Emma R.</cite>
+            </blockquote>
+            <blockquote>
+                <p>“Fast delivery and wonderful service. Will order again.”</p>
+                <cite>— Carlos M.</cite>
+            </blockquote>
+            <blockquote>
+                <p>“I always get compliments on the bouquets from my office.”</p>
+                <cite>— Priya K.</cite>
+            </blockquote>
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-inner">
+        <p>&copy; <span id="year"></span> Petal &amp; Stem – Fresh Flowers.</p>
+        <ul class="social">
+            <li><a href="#" aria-label="Instagram">📸</a></li>
+            <li><a href="#" aria-label="Facebook">📘</a></li>
+            <li><a href="#" aria-label="Twitter">🐦</a></li>
+        </ul>
+    </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
