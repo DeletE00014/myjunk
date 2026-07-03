@@ -1,0 +1,12 @@
+/* css/footer.css */
+.site-footer {
+    background-color: var(--primary-dark);
+    color: white;
+    padding: var(--space-8) 0;
+    margin-top: auto;
+}
+
+.site-footer p {
+    text-align: center;
+    color: var(--text-muted);
+}

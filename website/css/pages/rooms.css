@@ -1,0 +1,16 @@
+/* css/pages/rooms.css */
+.room-card .room-img-placeholder {
+    width: 300px;
+    height: 100%;
+    min-height: 200px;
+}
+
+@media (max-width: 768px) {
+    .room-card {
+        flex-direction: column;
+    }
+    .room-card .room-img-placeholder {
+        width: 100%;
+        height: 200px;
+    }
+}

@@ -1,0 +1,30 @@
+/* css/header.css */
+.site-header {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border-bottom: 1px solid var(--glass-border);
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: var(--space-4) 0;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 1px;
+}
+
+.main-nav a {
+    margin-left: var(--space-4);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+.main-nav a:hover {
+    color: var(--accent);
+}
+
+body {
+    padding-top: 80px; /* offset for fixed header */
+}

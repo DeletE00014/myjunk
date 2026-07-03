@@ -1,0 +1,761 @@
+/* css/pages/misc.css — About, Contact, FAQ shared styles */
+
+/* ========================
+   Page Hero Banner (shorter than home hero)
+   ======================== */
+.page-hero {
+    min-height: 40vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    background: linear-gradient(135deg, rgba(26, 58, 92, 0.85) 0%, rgba(13, 31, 51, 0.92) 50%, rgba(200, 164, 94, 0.3) 100%);
+    color: white;
+    overflow: hidden;
+}
+
+.page-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(200, 164, 94, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(45, 90, 142, 0.2) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.page-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    padding: var(--space-8) var(--space-4);
+}
+
+.page-hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: var(--space-3);
+    letter-spacing: -0.5px;
+}
+
+.page-hero-subtitle {
+    font-size: 1.2rem;
+    color: var(--accent-light);
+    font-weight: 300;
+    line-height: 1.6;
+}
+
+.page-hero-divider {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    margin: var(--space-4) auto;
+    border-radius: 2px;
+}
+
+/* ========================
+   Section Styling
+   ======================== */
+.page-section {
+    padding: var(--space-16) 0;
+}
+
+.page-section.alt-bg {
+    background: var(--bg-secondary);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: var(--space-12);
+}
+
+.section-header h2 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-3);
+}
+
+.section-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.section-accent-line {
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    margin: var(--space-3) auto var(--space-4);
+    border-radius: 2px;
+}
+
+/* ========================
+   About Page — Hotel Story
+   ======================== */
+.story-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-12);
+    align-items: center;
+}
+
+.story-image {
+    height: 420px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.story-image::after {
+    content: '🏨';
+    position: absolute;
+    font-size: 5rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.3;
+}
+
+.story-text h3 {
+    font-size: 1.75rem;
+    color: var(--primary);
+    margin-bottom: var(--space-4);
+}
+
+.story-text p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: var(--space-4);
+    font-size: 1.05rem;
+}
+
+.story-text p:last-child {
+    margin-bottom: 0;
+}
+
+/* ========================
+   About Page — Amenity Feature Cards
+   ======================== */
+.amenity-feature-card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: var(--space-8);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.amenity-feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    transform: scaleX(0);
+    transition: transform 0.35s ease;
+}
+
+.amenity-feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-light);
+}
+
+.amenity-feature-card:hover::before {
+    transform: scaleX(1);
+}
+
+.amenity-feature-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.25rem;
+    background: linear-gradient(135deg, rgba(26, 58, 92, 0.08), rgba(200, 164, 94, 0.12));
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.amenity-feature-card:hover .amenity-feature-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.amenity-feature-card h4 {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.amenity-feature-card p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* ========================
+   About Page — Team Grid Cards
+   ======================== */
+.team-card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+}
+
+.team-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+}
+
+.team-card-avatar {
+    width: 100%;
+    height: 220px;
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-dark) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.team-card-avatar::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(transparent, var(--bg-card));
+}
+
+.team-card-body {
+    padding: var(--space-6);
+}
+
+.team-card-body h4 {
+    font-size: 1.15rem;
+    color: var(--text-primary);
+    margin-bottom: var(--space-1);
+}
+
+.team-card-title {
+    color: var(--accent-dark);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: var(--space-3);
+}
+
+.team-card-bio {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* ========================
+   About Page — Stats
+   ======================== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-6);
+}
+
+.stat-card {
+    text-align: center;
+    padding: var(--space-8) var(--space-4);
+    background: var(--bg-card);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-number {
+    font-size: 2.75rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    margin-bottom: var(--space-2);
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ========================
+   Contact Page — Info Cards
+   ======================== */
+.contact-info-card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: var(--space-8);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-info-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transform: scaleX(0);
+    transition: transform 0.35s ease;
+}
+
+.contact-info-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+}
+
+.contact-info-card:hover::after {
+    transform: scaleX(1);
+}
+
+.contact-info-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    background: linear-gradient(135deg, rgba(26, 58, 92, 0.08), rgba(200, 164, 94, 0.12));
+    border-radius: 50%;
+}
+
+.contact-info-card h4 {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.contact-info-card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* ========================
+   Contact Page — Form
+   ======================== */
+.contact-form-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-12);
+    align-items: start;
+}
+
+.contact-form {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: var(--space-8);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+}
+
+.contact-form h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: var(--space-6);
+}
+
+.form-group {
+    margin-bottom: var(--space-4);
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.form-group .required-star {
+    color: var(--error);
+    margin-left: 2px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-family: var(--font-primary);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all 0.25s ease;
+    outline: none;
+}
+
+.form-control:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(26, 58, 92, 0.1);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.form-control.error {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 130px;
+}
+
+select.form-control {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a4a6a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+}
+
+.form-error-text {
+    color: var(--error);
+    font-size: 0.8rem;
+    margin-top: var(--space-1);
+    display: none;
+}
+
+.form-error-text.visible {
+    display: block;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+}
+
+/* ========================
+   Contact Page — Map Placeholder
+   ======================== */
+.map-section {
+    background: var(--bg-card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+}
+
+.map-placeholder {
+    height: 100%;
+    min-height: 380px;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 40%, var(--primary-light) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.map-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(255,255,255,0.03) 30px, rgba(255,255,255,0.03) 31px),
+        repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(255,255,255,0.03) 30px, rgba(255,255,255,0.03) 31px);
+}
+
+.map-placeholder-icon {
+    font-size: 3.5rem;
+    margin-bottom: var(--space-4);
+    position: relative;
+    z-index: 1;
+}
+
+.map-placeholder h4 {
+    color: white;
+    font-size: 1.2rem;
+    margin-bottom: var(--space-2);
+    position: relative;
+    z-index: 1;
+}
+
+.map-placeholder p {
+    color: var(--accent-light);
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* ========================
+   FAQ — Accordion
+   ======================== */
+.faq-search-wrapper {
+    max-width: 600px;
+    margin: 0 auto var(--space-12);
+    position: relative;
+}
+
+.faq-search-wrapper .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.faq-search {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    font-size: 1rem;
+    font-family: var(--font-primary);
+    border: 2px solid var(--border);
+    border-radius: 50px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    outline: none;
+    box-shadow: var(--shadow-sm);
+}
+
+.faq-search:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 4px rgba(26, 58, 92, 0.1);
+}
+
+.faq-search::placeholder {
+    color: var(--text-muted);
+}
+
+.faq-list {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.faq-item {
+    background: var(--bg-card);
+    border-radius: 12px;
+    margin-bottom: var(--space-3);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.faq-item.active {
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow-md);
+}
+
+.faq-question {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: left;
+    transition: color 0.25s ease;
+    gap: var(--space-4);
+}
+
+.faq-question:hover {
+    color: var(--primary-light);
+}
+
+.faq-item.active .faq-question {
+    color: var(--primary);
+}
+
+.faq-chevron {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-muted);
+}
+
+.faq-item.active .faq-chevron {
+    transform: rotate(180deg);
+    color: var(--primary);
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-item.active .faq-answer {
+    max-height: 300px;
+}
+
+.faq-answer-inner {
+    padding: 0 1.5rem 1.25rem 1.5rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+
+.faq-item.hidden {
+    display: none;
+}
+
+/* FAQ CTA */
+.faq-cta {
+    text-align: center;
+    padding: var(--space-12) var(--space-4);
+    margin-top: var(--space-8);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    border-radius: 16px;
+    color: white;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.faq-cta h3 {
+    color: white;
+    font-size: 1.75rem;
+    margin-bottom: var(--space-3);
+}
+
+.faq-cta p {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: var(--space-6);
+    font-size: 1.05rem;
+}
+
+.btn-accent {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-accent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(200, 164, 94, 0.35);
+    color: white;
+}
+
+/* ========================
+   Responsive
+   ======================== */
+@media (max-width: 992px) {
+    .story-section {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+    }
+
+    .contact-form-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .page-hero-title {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-hero {
+        min-height: 32vh;
+    }
+
+    .page-hero-title {
+        font-size: 2rem;
+    }
+
+    .page-hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-4);
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .faq-question {
+        font-size: 0.95rem;
+        padding: 1rem 1.25rem;
+    }
+
+    .faq-answer-inner {
+        padding: 0 1.25rem 1rem 1.25rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
