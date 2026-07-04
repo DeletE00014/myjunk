@@ -1,0 +1,414 @@
+/* =================================================
+   DESIGN SYSTEM VARIABLES & SYSTEM SETTINGS
+   ================================================= */
+:root {
+    /* Colors */
+    --color-bg-dark: #0a0a0a;
+    --color-bg-deep: #000000;
+    --color-bg-card: rgba(17, 17, 17, 0.75);
+    
+    --color-neon-yellow: #ffdb58;
+    --color-neon-yellow-glow: rgba(255, 219, 88, 0.6);
+    --color-neon-orange: #ff4500;
+    --color-neon-orange-glow: rgba(255, 69, 0, 0.6);
+    --color-neon-green: #00ff00;
+    --color-neon-green-glow: rgba(0, 255, 0, 0.6);
+    
+    --color-text-primary: #e0e0e0;
+    --color-text-muted: #888888;
+    --color-border: #222222;
+
+    /* Fonts */
+    --font-pixel: 'Press Start 2P', cursive, sans-serif;
+}
+
+/* =================================================
+   BASIC RESET & GLOBALS
+   ================================================= */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    background-color: var(--color-bg-dark);
+}
+
+body {
+    font-family: var(--font-pixel);
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: none;
+}
+
+/* Custom Selection */
+::selection {
+    background-color: var(--color-neon-yellow);
+    color: var(--color-bg-deep);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--color-bg-deep);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-neon-yellow);
+}
+
+/* =================================================
+   HERO SECTION – THE DRIFT TUNNEL
+   ================================================= */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--color-bg-deep);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Scrolling night-sky gradient background */
+.hero__bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+        #060614 0%,
+        #0e0520 40%,
+        #1b002c 75%,
+        #000000 100%);
+    background-size: 100% 200%;
+    animation: bgSlide 16s linear infinite;
+    z-index: 1;
+}
+
+@keyframes bgSlide {
+    0%   { background-position: 0% 0%; }
+    50%  { background-position: 0% 100%; }
+    100% { background-position: 0% 0%; }
+}
+
+/* Drifting car silhouette (AE86) */
+.hero__car {
+    position: absolute;
+    bottom: 25%;
+    left: -15%;               /* Starts off-screen left */
+    width: 28vw;
+    max-width: 280px;
+    aspect-ratio: 3 / 2;      /* Prevent collapse */
+    background: url("../assets/img/car.png") no-repeat center/contain;
+    filter: drop-shadow(0 0 12px var(--color-neon-yellow));
+    animation: drift 5s ease-in-out infinite;
+    z-index: 2;
+    image-rendering: pixelated;
+}
+
+@keyframes drift {
+    0%   { transform: translateX(0vw) rotate(3deg); }
+    25%  { transform: translateX(35vw) translateY(-2vh) rotate(-4deg); }
+    50%  { transform: translateX(70vw) translateY(1vh) rotate(5deg); }
+    75%  { transform: translateX(35vw) translateY(-1vh) rotate(-3deg); }
+    100% { transform: translateX(0vw) rotate(3deg); }
+}
+
+/* Overlay & Headings */
+.hero__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 1rem;
+    z-index: 3;
+    pointer-events: none; /* Let clicks pass to absolute buttons */
+}
+
+.hero__title {
+    font-size: 3.5rem;
+    color: var(--color-neon-yellow);
+    text-shadow: 0 0 12px var(--color-neon-yellow-glow),
+                 0 0 24px var(--color-neon-yellow-glow);
+    letter-spacing: 2px;
+    animation: titlePulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes titlePulse {
+    from {
+        text-shadow: 0 0 8px var(--color-neon-yellow-glow), 0 0 16px var(--color-neon-yellow-glow);
+        transform: scale(1);
+    }
+    to {
+        text-shadow: 0 0 16px var(--color-neon-yellow-glow), 0 0 32px var(--color-neon-yellow-glow);
+        transform: scale(1.02);
+    }
+}
+
+.hero__subtitle {
+    margin: 1rem 0 2.5rem;
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* =================================================
+   BUTTONS
+   ================================================= */
+.btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    font-family: var(--font-pixel);
+    font-size: 0.85rem;
+    text-decoration: none;
+    border-radius: 0px; /* Sharp retro corners */
+    border: 3px solid transparent;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: auto; /* Enable click explicitly inside overlay */
+}
+
+.btn--primary {
+    background-color: var(--color-neon-orange);
+    color: var(--color-text-primary);
+    border-color: var(--color-text-primary);
+    box-shadow: 0 0 8px var(--color-neon-orange-glow);
+}
+
+.btn--primary:hover {
+    box-shadow: 0 0 18px var(--color-neon-orange), 0 0 4px var(--color-text-primary);
+    transform: translateY(-3px);
+}
+
+.btn--glow {
+    background-color: var(--color-neon-green);
+    color: var(--color-bg-deep);
+    border-color: var(--color-bg-deep);
+    box-shadow: 0 0 8px var(--color-neon-green-glow);
+}
+
+.btn--glow:hover {
+    box-shadow: 0 0 20px var(--color-neon-green), 0 0 6px var(--color-bg-deep);
+    transform: scale(1.05);
+}
+
+/* =================================================
+   SECTIONS STYLING – PIXEL ART & FAST UI
+   ================================================= */
+.section {
+    padding: 6rem 2rem;
+    text-align: center;
+    position: relative;
+    border-bottom: 4px solid var(--color-border);
+}
+
+.section--intro {
+    background-color: #111111;
+}
+
+.section--features {
+    background-color: var(--color-bg-dark);
+}
+
+.section--cta {
+    background: linear-gradient(180deg, #0e0520 0%, var(--color-bg-dark) 100%);
+}
+
+.section__title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: var(--color-neon-yellow);
+    text-shadow: 0 0 8px var(--color-neon-yellow-glow);
+    text-transform: uppercase;
+}
+
+.section__text {
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: #b2b2b2;
+}
+
+/* Repeatable Pixel-Art Road Tile container */
+.pixel-art-container {
+    width: 100%;
+    max-width: 960px;
+    height: 64px;
+    margin: 2rem auto 0;
+    background: url("../assets/img/pixel-bg.png") repeat-x center;
+    background-size: auto 64px;
+    image-rendering: pixelated;
+    border-top: 4px dashed var(--color-neon-yellow);
+    border-bottom: 4px dashed var(--color-neon-yellow);
+    box-shadow: 0 0 15px rgba(255, 219, 88, 0.25);
+}
+
+/* Hide fallback img element inside the road container */
+.pixel-art {
+    display: none;
+}
+
+/* Feature grid list */
+.feature-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3rem;
+    list-style: none;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature {
+    width: 300px;
+    background-color: var(--color-bg-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 3px solid var(--color-border);
+    padding: 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.feature:hover {
+    border-color: var(--color-neon-yellow);
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 0 0 15px var(--color-neon-yellow-glow);
+}
+
+.feature__icon {
+    width: 48px;
+    height: auto;
+    filter: drop-shadow(0 0 6px var(--color-neon-yellow));
+    margin-bottom: 1.5rem;
+}
+
+.feature h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: var(--color-neon-yellow);
+}
+
+.feature p {
+    font-size: 0.75rem;
+    color: #a0a0a0;
+    line-height: 1.6;
+}
+
+/* Neon Spark Sweep Effect */
+.feature::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 100%);
+    opacity: 0;
+    transform: translateX(-100%);
+    animation: spark 6s ease-in-out infinite;
+}
+
+@keyframes spark {
+    0%, 85% {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* =================================================
+   FOOTER
+   ================================================= */
+.footer {
+    padding: 3rem 2rem;
+    background-color: var(--color-bg-deep);
+    text-align: center;
+    border-top: 4px solid var(--color-border);
+}
+
+.footer p {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    letter-spacing: 1px;
+}
+
+/* =================================================
+   RESPONSIVE LAYOUT BREAKPOINTS
+   ================================================= */
+@media (max-width: 992px) {
+    .feature-list {
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    html {
+        font-size: 14px;
+    }
+    
+    .hero__title {
+        font-size: 2.5rem;
+    }
+    
+    .hero__subtitle {
+        font-size: 0.85rem;
+    }
+    
+    .hero__car {
+        width: 40vw;
+        max-width: 220px;
+        bottom: 22%;
+    }
+    
+    .section {
+        padding: 4rem 1.5rem;
+    }
+    
+    .feature-list {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .feature {
+        width: 100%;
+        max-width: 320px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero__title {
+        font-size: 2rem;
+    }
+    
+    .btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.75rem;
+    }
+}

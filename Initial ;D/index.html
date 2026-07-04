@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initial D • Drift Zone | Feel the Drift, Own the Night</title>
+    <meta name="description" content="Immerse yourself in the mountain pass racing world. A tribute to Initial D with retro pixel art, responsive CSS drifting animations, and eurobeat speed aesthetics.">
+    <meta name="keywords" content="Initial D, Toyota AE86, Drift, Retro, Pixel Art, Street Racing, Gunma, Mt. Haruna, Arcade UI">
+    <meta name="author" content="Drift Studios">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Initial D • Drift Zone">
+    <meta property="og:description" content="Feel the drift. Own the night. Retro 8-bit racing aesthetic meets modern CSS animations.">
+    <meta property="og:type" content="website">
+    
+    <!-- Retro Pixel-style Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ==========================
+         HERO SECTION – THE DRIFT TUNNEL
+       ========================== -->
+    <header class="hero" id="hero-header">
+        <div class="hero__bg" id="hero-bg-parallax"></div> <!-- Night-city scrolling backdrop -->
+        <div class="hero__car" id="hero-car-sprite"></div> <!-- Drifting AE86 sprite -->
+        <div class="hero__overlay">
+            <h1 class="hero__title">INITIAL D</h1>
+            <p class="hero__subtitle">Feel the drift. Own the night.</p>
+            <a href="#content" id="btn-enter-circuit" class="btn btn--primary">Enter the Circuit</a>
+        </div>
+    </header>
+
+    <!-- ==========================
+         MAIN CONTENT – PIXEL-ART CIRCUITS
+       ========================== -->
+    <main id="content">
+        <!-- SECTION 1 – INTRO -->
+        <section class="section section--intro" id="intro-section">
+            <h2 class="section__title">Welcome Racer</h2>
+            <p class="section__text">
+                The mountain passes of Gunma whisper stories of legendary drifting battles.
+                Choose your drift line, tune your carburetor, and conquer the hairpins of Mount Akina.
+            </p>
+            <div class="pixel-art-container">
+                <img src="assets/img/pixel-bg.png" alt="Seamless 8-bit mountain pass road tile" class="pixel-art" id="pixel-art-road">
+            </div>
+        </section>
+
+        <!-- SECTION 2 – FEATURES -->
+        <section class="section section--features" id="features-section">
+            <h2 class="section__title">Specs & Tune-ups</h2>
+            <ul class="feature-list">
+                <li class="feature" id="feat-racing">
+                    <img src="assets/img/speed-line.svg" alt="Speed motion line icon" class="feature__icon">
+                    <h3>High‑Octane Racing</h3>
+                    <p>Responsive CSS drift mechanics that feel like classic arcade racers.</p>
+                </li>
+                <li class="feature" id="feat-pixel">
+                    <img src="assets/img/speed-line.svg" alt="Speed motion line icon" class="feature__icon">
+                    <h3>Pixel‑Perfect UI</h3>
+                    <p>Authentic 8-bit pixel-art aesthetics blending with modern CSS layouts.</p>
+                </li>
+                <li class="feature" id="feat-leaderboard">
+                    <img src="assets/img/speed-line.svg" alt="Speed motion line icon" class="feature__icon">
+                    <h3>Dynamic Records</h3>
+                    <p>Real-time records on the downhill passes. Claim your title as the fastest.</p>
+                </li>
+            </ul>
+        </section>
+
+        <!-- SECTION 3 – CALL TO ACTION -->
+        <section class="section section--cta" id="cta-section">
+            <h2 class="section__title">Ready to Shift?</h2>
+            <p class="section__text">Press the pedal and feel the Eurobeat rhythm accelerate through your veins.</p>
+            <a href="#" id="btn-start-race" class="btn btn--glow">Start the Race</a>
+        </section>
+    </main>
+
+    <!-- ==========================
+         FOOTER
+       ========================== -->
+    <footer class="footer" id="footer-section">
+        <p>© 2026 Drift Studios • Inspired by Initial D • All rights reserved.</p>
+    </footer>
+
+    <!-- Main JavaScript Link -->
+    <script src="js/main.js"></script>
+</body>
+</html>

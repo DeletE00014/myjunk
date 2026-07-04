@@ -1,0 +1,9 @@
+<svg width="40" height="4" viewBox="0 0 40 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="speedGrad" x1="0" y1="0" x2="40" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+  <line x1="0" y1="2" x2="40" y2="2" stroke="url(#speedGrad)" stroke-width="2" stroke-linecap="round"/>
+</svg>
