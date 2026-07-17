@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>3D Aim Trainer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; }
+
+  #overlay {
+    position: absolute; width: 100%; height: 100%;
+    background: rgba(8, 8, 20, 0.92);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 10; gap: 12px;
+  }
+  #overlay h1 {
+    font-size: 52px; color: #ff4655; text-transform: uppercase;
+    letter-spacing: 6px; font-weight: 900;
+    text-shadow: 0 0 30px rgba(255,70,85,0.6);
+  }
+  #overlay p { color: #aaa; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+
+  #statsBox {
+    display: none; background: rgba(0,0,0,0.5);
+    padding: 16px 32px; border-radius: 6px; border: 1px solid #ff4655;
+    text-align: center; margin-bottom: 10px;
+  }
+  #statsBox .final-score { font-size: 48px; color: #ff4655; font-weight: 900; }
+  #statsBox .final-label { font-size: 12px; color: #888; letter-spacing: 2px; text-transform: uppercase; }
+
+  button {
+    padding: 14px 44px; font-size: 16px; background: #ff4655; color: #fff;
+    border: none; border-radius: 3px; cursor: pointer; transition: .15s;
+    text-transform: uppercase; font-weight: 700; letter-spacing: 3px;
+  }
+  button:hover { background: #ff6b77; transform: translateY(-1px); }
+  button:active { transform: translateY(0); }
+
+  /* Valorant-style crosshair */
+  #crosshair {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none; z-index: 5; display: none;
+    width: 0; height: 0;
+  }
+  .ch-line {
+    position: absolute; background: #00ffff;
+    box-shadow: 0 0 2px #000, 0 0 2px #000;
+  }
+  /* gap=4px, length=8px, thickness=2px */
+  .ch-top    { width: 2px; height: 8px; top: -12px; left: -1px; }
+  .ch-bottom { width: 2px; height: 8px; top:   4px; left: -1px; }
+  .ch-left   { width: 8px; height: 2px; left: -12px; top: -1px; }
+  .ch-right  { width: 8px; height: 2px; left:   4px; top: -1px; }
+  /* center dot */
+  .ch-dot    { width: 2px; height: 2px; top: -1px; left: -1px; background: #00ffff; }
+
+  /* Hitmarker */
+  #hitmarker {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none; z-index: 6; display: none;
+    width: 20px; height: 20px;
+  }
+  #hitmarker::before, #hitmarker::after {
+    content: ''; position: absolute; background: #ff4655;
+    box-shadow: 0 0 3px #000;
+    width: 6px; height: 2px; top: 50%; left: 50%;
+  }
+  #hitmarker::before { transform: translate(-50%,-50%) rotate(45deg); }
+  #hitmarker::after  { transform: translate(-50%,-50%) rotate(-45deg); }
+  #hitmarker .hm2, #hitmarker .hm3 {
+    position: absolute; background: #ff4655;
+    box-shadow: 0 0 3px #000;
+    width: 6px; height: 2px; top: 50%; left: 50%;
+  }
+  #hitmarker .hm2 { transform: translate(2px,-1px) rotate(45deg);   left: auto; right: 50%; top: 50%; margin-right: -9px; }
+
+  /* HUD */
+  #hud {
+    position: absolute; top: 0; left: 0; right: 0;
+    display: none; pointer-events: none; z-index: 5;
+    padding: 16px 24px;
+    display: none;
+    flex-direction: row; justify-content: space-between; align-items: flex-start;
+  }
+  .hud-block { text-align: center; }
+  .hud-val { font-size: 36px; font-weight: 900; color: #fff; line-height: 1; }
+  .hud-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 2px; margin-top: 2px; }
+  #timerBar {
+    position: absolute; bottom: 0; left: 0; height: 3px;
+    background: #ff4655; width: 100%; transform-origin: left;
+    transition: none;
+  }
+
+  canvas { display: block; }
+</style>
+<script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+
+<div id="overlay">
+  <h1>Aim Trainer</h1>
+  <p>Valorant Style</p>
+  <div id="statsBox">
+    <div class="final-label">Final Score</div>
+    <div class="final-score" id="finalScore">0</div>
+  </div>
+  <button id="startBtn">Click to Play</button>
+</div>
+
+<!-- Crosshair -->
+<div id="crosshair">
+  <div class="ch-line ch-top"></div>
+  <div class="ch-line ch-bottom"></div>
+  <div class="ch-line ch-left"></div>
+  <div class="ch-line ch-right"></div>
+  <div class="ch-line ch-dot"></div>
+</div>
+
+<!-- Hitmarker (4 diagonal lines via CSS) -->
+<div id="hitmarker"></div>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hud-block">
+    <div class="hud-val" id="score">0</div>
+    <div class="hud-label">Score</div>
+  </div>
+  <div class="hud-block" style="text-align:center; flex:1;">
+    <div id="timerBar"></div>
+  </div>
+  <div class="hud-block">
+    <div class="hud-val" id="timer">30</div>
+    <div class="hud-label">Seconds</div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+/* ─── GLOBALS ─────────────────────────────────── */
+let camera, scene, renderer, controls;
+let gunGroup, raycaster;
+const CENTER = new THREE.Vector2(0, 0);
+
+let targets = [], bullets = [], targetMeshes = [];
+let sharedTargetGeo, sharedTargetMat;
+let sharedBulletGeo, sharedBulletMat;
+
+let score = 0, timeLeft = 30, GAME_DURATION = 30;
+let gameRunning = false;
+let gameTimer = null, spawnLoop = null;
+
+let recoil = 0;
+let moveF = false, moveB = false, moveL = false, moveR = false;
+const velocity = new THREE.Vector3();
+const moveDir  = new THREE.Vector3();
+
+let hitmarkerTimer = null;
+
+const clock = new THREE.Clock();
+
+/* ─── INIT ────────────────────────────────────── */
+function init() {
+  /* Scene */
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0d0d1a);
+  scene.fog = new THREE.FogExp2(0x0d0d1a, 0.018);
+
+  /* Lights */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+  const dir = new THREE.DirectionalLight(0xffffff, 1.2);
+  dir.position.set(10, 30, 10);
+  dir.castShadow = true;
+  dir.shadow.mapSize.set(1024, 1024);
+  scene.add(dir);
+
+  /* Camera — 71° VFOV ≈ Valorant 103° HFOV at 16:9 */
+  camera = new THREE.PerspectiveCamera(71, innerWidth / innerHeight, 0.05, 500);
+  camera.position.set(0, 1.6, 0);
+
+  /* Controls */
+  controls = new PointerLockControls(camera, document.body);
+  scene.add(controls.getObject());
+
+  /* Shared geometry & material */
+  sharedTargetGeo = new THREE.SphereGeometry(0.35, 24, 24);
+  sharedTargetMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.4,
+    metalness: 0.1,
+    emissive: new THREE.Color(0xff4655),
+    emissiveIntensity: 0.35
+  });
+
+  sharedBulletGeo = new THREE.CylinderGeometry(0.012, 0.012, 1, 6);
+  sharedBulletGeo.rotateX(Math.PI / 2); // point forward
+  sharedBulletMat = new THREE.MeshBasicMaterial({
+    color: 0xffe580,
+    transparent: true,
+    opacity: 1,
+    depthWrite: false
+  });
+
+  /* Floor */
+  const floorGeo = new THREE.PlaneGeometry(300, 300);
+  const floorMat = new THREE.MeshStandardMaterial({ color: 0x1a1a2e, roughness: 1 });
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  /* Grid */
+  const grid = new THREE.GridHelper(300, 150, 0x2a2a4a, 0x1e1e38);
+  grid.position.y = 0.01;
+  scene.add(grid);
+
+  /* Wall (target backdrop like Valorant range) */
+  const wallGeo = new THREE.PlaneGeometry(80, 20);
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0x1c1c2e });
+  const wall = new THREE.Mesh(wallGeo, wallMat);
+  wall.position.set(0, 10, -30);
+  wall.receiveShadow = true;
+  scene.add(wall);
+
+  /* Gun model */
+  gunGroup = new THREE.Group();
+
+  const slideGeo = new THREE.BoxGeometry(0.05, 0.07, 0.32);
+  const slideMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.9, roughness: 0.15 });
+  const slide = new THREE.Mesh(slideGeo, slideMat);
+  slide.position.set(0, 0.005, -0.05);
+  gunGroup.add(slide);
+
+  const gripGeo = new THREE.BoxGeometry(0.045, 0.12, 0.14);
+  const gripMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 });
+  const grip = new THREE.Mesh(gripGeo, gripMat);
+  grip.position.set(0, -0.09, 0.03);
+  gunGroup.add(grip);
+
+  const barrelGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.28, 8);
+  barrelGeo.rotateX(Math.PI / 2);
+  const barrelMat = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 1, roughness: 0.1 });
+  const barrel = new THREE.Mesh(barrelGeo, barrelMat);
+  barrel.position.set(0, 0.005, -0.22);
+  gunGroup.add(barrel);
+
+  gunGroup.position.set(0.18, -0.18, -0.28);
+  camera.add(gunGroup);
+
+  /* Renderer */
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  document.body.appendChild(renderer.domElement);
+
+  /* Raycaster */
+  raycaster = new THREE.Raycaster();
+
+  /* UI wiring */
+  const overlay   = document.getElementById('overlay');
+  const startBtn  = document.getElementById('startBtn');
+  const crosshair = document.getElementById('crosshair');
+  const hud       = document.getElementById('hud');
+
+  startBtn.addEventListener('click', () => controls.lock());
+
+  controls.addEventListener('lock', () => {
+    overlay.style.display = 'none';
+    crosshair.style.display = 'block';
+    hud.style.display = 'flex';
+    if (!gameRunning) startGame();
+  });
+
+  controls.addEventListener('unlock', () => {
+    overlay.style.display = 'flex';
+    crosshair.style.display = 'none';
+    hud.style.display = 'none';
+    if (gameRunning) startBtn.textContent = 'Resume';
+  });
+
+  /* Input */
+  document.addEventListener('keydown', e => {
+    if (!controls.isLocked) return;
+    switch (e.code) {
+      case 'KeyW': moveF = true; break;
+      case 'KeyS': moveB = true; break;
+      case 'KeyA': moveL = true; break;
+      case 'KeyD': moveR = true; break;
+    }
+  });
+  document.addEventListener('keyup', e => {
+    switch (e.code) {
+      case 'KeyW': moveF = false; break;
+      case 'KeyS': moveB = false; break;
+      case 'KeyA': moveL = false; break;
+      case 'KeyD': moveR = false; break;
+    }
+  });
+  document.addEventListener('mousedown', onShoot);
+  window.addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+
+  animate();
+}
+
+/* ─── TARGET SPAWNING ─────────────────────────── */
+function spawnTarget() {
+  const mesh = new THREE.Mesh(sharedTargetGeo, sharedTargetMat.clone());
+  mesh.castShadow = true;
+
+  // Spread targets across the wall zone
+  mesh.position.set(
+    (Math.random() - 0.5) * 28,
+    Math.random() * 4 + 0.8,
+    -(Math.random() * 12 + 14)
+  );
+
+  scene.add(mesh);
+  targets.push({ mesh, baseY: mesh.position.y });
+  targetMeshes.push(mesh);
+}
+
+/* ─── SHOOTING ────────────────────────────────── */
+function onShoot(e) {
+  if (e.button !== 0 || !controls.isLocked || !gameRunning) return;
+
+  recoil = 1;
+
+  // Hitscan raycast
+  raycaster.setFromCamera(CENTER, camera);
+  const hits = raycaster.intersectObjects(targetMeshes);
+
+  let hitDist = 60;
+  if (hits.length > 0) {
+    const hitMesh = hits[0].object;
+    hitDist = hits[0].distance;
+
+    scene.remove(hitMesh);
+    hitMesh.material.dispose();
+    targets      = targets.filter(t => t.mesh !== hitMesh);
+    targetMeshes = targetMeshes.filter(m => m !== hitMesh);
+
+    score++;
+    document.getElementById('score').textContent = score;
+    spawnTarget();
+
+    // Hitmarker flash
+    const hm = document.getElementById('hitmarker');
+    hm.style.display = 'block';
+    hm.style.opacity = '1';
+    clearTimeout(hitmarkerTimer);
+    hitmarkerTimer = setTimeout(() => { hm.style.display = 'none'; }, 90);
+  }
+
+  // Visual tracer
+  const tracerMat = sharedBulletMat.clone();
+  const tracer = new THREE.Mesh(sharedBulletGeo, tracerMat);
+
+  // Start from barrel tip in world space
+  const muzzle = new THREE.Vector3(0, 0.005, -0.3).applyMatrix4(gunGroup.matrixWorld);
+
+  // End point = muzzle + camera forward * hitDist
+  const dir = new THREE.Vector3();
+  camera.getWorldDirection(dir);
+  const endPt = muzzle.clone().addScaledVector(dir, hitDist);
+
+  // Place tracer at midpoint, orient along shot direction
+  const midPt = muzzle.clone().lerp(endPt, 0.5);
+  tracer.position.copy(midPt);
+  tracer.quaternion.copy(camera.quaternion);
+  tracer.scale.z = hitDist;           // stretch the cylinder to fill the distance
+
+  scene.add(tracer);
+  bullets.push({ mesh: tracer, mat: tracerMat, life: 6 });
+}
+
+/* ─── GAME FLOW ───────────────────────────────── */
+function startGame() {
+  gameRunning = true;
+  score = 0;
+  timeLeft = GAME_DURATION;
+  document.getElementById('score').textContent  = 0;
+  document.getElementById('timer').textContent  = timeLeft;
+  document.getElementById('timerBar').style.transform = 'scaleX(1)';
+  document.getElementById('statsBox').style.display = 'none';
+
+  // Clear old targets
+  targets.forEach(t => { scene.remove(t.mesh); t.mesh.material.dispose(); });
+  targets = []; targetMeshes = [];
+
+  for (let i = 0; i < 6; i++) spawnTarget();
+
+  clearInterval(gameTimer);
+  gameTimer = setInterval(() => {
+    if (!controls.isLocked) return;
+    timeLeft--;
+    document.getElementById('timer').textContent = timeLeft;
+    const pct = timeLeft / GAME_DURATION;
+    document.getElementById('timerBar').style.transform = `scaleX(${pct})`;
+    if (timeLeft <= 0) endGame();
+  }, 1000);
+
+  clearInterval(spawnLoop);
+  spawnLoop = setInterval(() => {
+    if (!controls.isLocked) return;
+    while (targets.length < 6) spawnTarget();
+  }, 1200);
+}
+
+function endGame() {
+  gameRunning = false;
+  clearInterval(gameTimer);
+  clearInterval(spawnLoop);
+  targets.forEach(t => { scene.remove(t.mesh); });
+  targets = []; targetMeshes = [];
+
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('statsBox').style.display = 'block';
+  document.getElementById('startBtn').textContent = 'Play Again';
+  controls.unlock();
+}
+
+/* ─── ANIMATION LOOP ──────────────────────────── */
+function animate() {
+  requestAnimationFrame(animate);
+  const delta = Math.min(clock.getDelta(), 0.05); // cap delta to avoid huge jumps
+
+  /* Movement (snappy Valorant feel) */
+  if (controls.isLocked) {
+    const accel   = 80;
+    const friction = 14;
+    const maxSpd  = 7;
+
+    moveDir.set(
+      (moveR ? 1 : 0) - (moveL ? 1 : 0),
+      0,
+      (moveB ? 1 : 0) - (moveF ? 1 : 0)
+    );
+    if (moveDir.lengthSq() > 0) moveDir.normalize();
+
+    velocity.x += moveDir.x * accel * delta;
+    velocity.z += moveDir.z * accel * delta;
+
+    // Friction
+    velocity.x -= velocity.x * friction * delta;
+    velocity.z -= velocity.z * friction * delta;
+
+    // Clamp speed
+    const spd = Math.hypot(velocity.x, velocity.z);
+    if (spd > maxSpd) {
+      velocity.x = (velocity.x / spd) * maxSpd;
+      velocity.z = (velocity.z / spd) * maxSpd;
+    }
+
+    controls.moveRight(velocity.x * delta);
+    controls.moveForward(-velocity.z * delta);
+
+    // Keep player at eye height
+    controls.getObject().position.y = 1.6;
+  }
+
+  /* Recoil recovery */
+  if (recoil > 0) {
+    recoil = Math.max(0, recoil - delta * 16);
+    gunGroup.position.z = -0.28 + recoil * 0.08;
+    gunGroup.rotation.x =  recoil * 0.14;
+  } else {
+    gunGroup.position.z = -0.28;
+    gunGroup.rotation.x = 0;
+  }
+
+  /* Tracer fade */
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    const b = bullets[i];
+    b.life--;
+    b.mat.opacity = b.life / 6;
+    if (b.life <= 0) {
+      scene.remove(b.mesh);
+      b.mat.dispose();
+      bullets.splice(i, 1);
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+
+init();
+</script>
+</body>
+</html>
