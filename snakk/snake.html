@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Snake – pure JS</title>
+<style>
+  body { margin:0; background:#222; display:flex; justify-content:center; align-items:center; height:100vh; }
+  canvas{ background:#111; border:2px solid #555; }
+  #score{ position:absolute; top:10px; left:50%; transform:translateX(-50%); color:#eee; font-family:sans-serif;}
+</style>
+</head>
+<body>
+<canvas id="game" width="400" height="300"></canvas>
+<div id="score">Score: 0</div>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx    = canvas.getContext('2d');
+const tileSize = 10;                    // size of one snake segment
+const rows     = canvas.height / tileSize;
+const cols     = canvas.width  / tileSize;
+
+let snake = [{x:4,y:5},{x:3,y:5},{x:2,y:5}];
+let dir   = {x:1, y:0};                 // moving right
+let food  = randomFood();
+let score = 0;
+const speed = 100;                      // ms per move
+
+// ---------- utility ----------
+function randomFood(){
+    let p;
+    do{
+        p = { x: Math.floor(Math.random()*cols),
+              y: Math.floor(Math.random()*rows) };
+    }while(snake.some(s=>s.x===p.x && s.y===p.y));
+    return p;
+}
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    // food
+    ctx.fillStyle = 'red';
+    ctx.fillRect(food.x*tileSize, food.y*tileSize, tileSize, tileSize);
+    // snake
+    ctx.fillStyle = '#0f0';
+    snake.forEach((s,i)=>{
+        ctx.fillRect(s.x*tileSize, s.y*tileSize, tileSize, tileSize);
+    });
+    document.getElementById('score').textContent = 'Score: '+score;
+}
+// ---------- game logic ----------
+function step(){
+    const newHead = {x: snake[0].x + dir.x,
+                     y: snake[0].y + dir.y};
+
+    // wall collision
+    if(newHead.x<0||newHead.x>=cols||newHead.y<0||newHead.y>=rows){
+        return gameOver();
+    }
+    // self‑collision
+    if(snake.some(seg=>seg.x===newHead.x && seg.y===newHead.y)){
+        return gameOver();
+    }
+
+    snake.unshift(newHead);               // grow or move
+
+    if(newHead.x===food.x && newHead.y===food.y){
+        score++;
+        food = randomFood();              // place new food
+    }else{
+        snake.pop();                      // remove tail
+    }
+}
+function gameOver(){
+    clearInterval(loop);
+    alert('Game Over! Final score: '+score);
+}
+// ---------- input ----------
+document.addEventListener('keydown', e=>{
+    switch(e.key){
+        case 'ArrowUp':   if(dir.y!==1){dir={x:0,y:-1};break;}
+        case 'ArrowDown': if(dir.y!==-1){dir={x:0,y:1};break;}
+        case 'ArrowLeft': if(dir.x!==1){dir={x:-1,y:0};break;}
+        case 'ArrowRight':if(dir.x!==-1){dir={x:1,y:0};break;}
+    }
+});
+// ---------- start ----------
+draw();
+const loop = setInterval(()=>{
+    step(); draw();
+}, speed);
+</script>
+</body>
+</html>
