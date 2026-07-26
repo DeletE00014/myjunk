@@ -1,0 +1,21 @@
+{
+  "name": "dagupan-tourist-attraction-website",
+  "version": "1.0.0",
+  "description": "Modern glassmorphism web application for Dagupan City Tourist Attractions, Culture, Seafood & Itineraries",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "dagupan",
+    "tourism",
+    "philippines",
+    "bangus-capital",
+    "tondaligan",
+    "glassmorphism",
+    "web-app"
+  ],
+  "author": "Antigravity AI Team",
+  "license": "MIT"
+}

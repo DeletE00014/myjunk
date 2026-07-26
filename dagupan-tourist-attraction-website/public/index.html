@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dagupan Tourist Attractions – Discover Bangus Capital of the World</title>
+  <meta name="description" content="Explore Dagupan City's top attractions, Tondaligan People's Park, Dawel River Cruise, Bangus Festival, authentic seafood restaurants, and culture.">
+  <meta name="keywords" content="Dagupan City, Dagupan Tourism, Tondaligan Beach, Bangus Festival, Pangasinan Attractions, Matutina Seafood">
+  <meta property="og:title" content="Dagupan Tourist Attraction Website">
+  <meta property="og:description" content="Plan your trip to Dagupan City with interactive maps, AI travel planner, food guides, and festival events.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- App Custom Styles -->
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="app-container">
+    <!-- NAVIGATION SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <i class="fa-solid fa-fish-fins"></i>
+        </div>
+        <div>
+          <h1 class="brand-title">Dagupan<span class="gradient-text"> Explore</span></h1>
+          <span class="brand-subtitle">Bangus Capital PH</span>
+        </div>
+      </div>
+
+      <nav>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <button class="active" data-view="home" onclick="app.switchView('home')">
+              <i class="fa-solid fa-compass"></i> Discover All
+            </button>
+          </li>
+          <li class="nav-item">
+            <button data-cat="Beaches" onclick="app.filterByCategory('Beaches')">
+              <i class="fa-solid fa-umbrella-beach"></i> Beaches & Parks
+            </button>
+          </li>
+          <li class="nav-item">
+            <button data-cat="Restaurants" onclick="app.filterByCategory('Restaurants')">
+              <i class="fa-solid fa-utensils"></i> Seafood & Dining
+            </button>
+          </li>
+          <li class="nav-item">
+            <button data-cat="Landmarks" onclick="app.filterByCategory('Landmarks')">
+              <i class="fa-solid fa-church"></i> Culture & Landmarks
+            </button>
+          </li>
+          <li class="nav-item">
+            <button data-cat="Eco-Tourism" onclick="app.filterByCategory('Eco-Tourism')">
+              <i class="fa-solid fa-tree"></i> Eco-Tourism
+            </button>
+          </li>
+          <li class="nav-item">
+            <button data-cat="Festivals" onclick="app.filterByCategory('Festivals')">
+              <i class="fa-solid fa-drum"></i> Bangus Festival
+            </button>
+          </li>
+          <li class="nav-item">
+            <button data-cat="Hotels" onclick="app.filterByCategory('Hotels')">
+              <i class="fa-solid fa-hotel"></i> Hotels & Resorts
+            </button>
+          </li>
+          <li class="nav-item" style="margin-top: 1rem; border-top: 1px solid var(--glass-border); padding-top: 1rem;">
+            <button data-view="planner" onclick="app.switchView('planner')">
+              <i class="fa-solid fa-route"></i> Travel Planner
+            </button>
+          </li>
+          <li class="nav-item">
+            <button data-view="ai-advisor" onclick="app.openAiAdvisorModal()">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> AI Travel Concierge
+            </button>
+          </li>
+          <li class="nav-item">
+            <button data-view="admin" onclick="app.openAdminView()">
+              <i class="fa-solid fa-user-gear"></i> Admin Portal
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn-secondary" style="width: 100%; justify-content: center;" onclick="app.toggleTheme()">
+          <i class="fa-solid fa-circle-half-stroke"></i> <span id="theme-toggle-label">Light Theme</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN WRAPPER -->
+    <div class="main-wrapper">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <button class="btn-icon" id="mobile-menu-btn" onclick="app.toggleMobileSidebar()">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="search-bar-top">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="topbar-search-input" placeholder="Search Dagupan spots, grilled bangus, beaches..." oninput="app.handleSearchInput(event)">
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn-icon" onclick="app.switchView('planner')" title="Saved Bookmarks / Travel Plan">
+            <i class="fa-solid fa-heart"></i>
+            <span class="badge-count" id="bookmark-badge">0</span>
+          </button>
+
+          <button class="btn-primary" onclick="app.openAiAdvisorModal()" style="font-size: 0.85rem; padding: 0.5rem 1.2rem;">
+            <i class="fa-solid fa-sparkles"></i> AI Plan Trip
+          </button>
+
+          <div id="admin-status-badge">
+            <button class="btn-secondary" onclick="app.openAdminModal()" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+              <i class="fa-solid fa-lock"></i> Admin Login
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- MAIN CONTENT VIEWS -->
+      <main id="main-content">
+        <!-- HOME / DISCOVER VIEW -->
+        <section id="view-home">
+          <!-- HERO CAROUSEL -->
+          <div class="hero-section">
+            <img src="/assets/hero_banner.jpg" alt="Dagupan Hero Sunset" class="hero-bg-img" id="hero-img">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+              <span class="hero-badge"><i class="fa-solid fa-location-dot"></i> Welcome to Dagupan City, Pangasinan</span>
+              <h2 class="hero-title">Experience the Capital of <span class="gradient-text">Milkfish & Sunshine</span></h2>
+              <p class="hero-subtitle">Discover golden coastal beaches, serene river cruises, world-renowned seafood, and vibrant cultural heritage.</p>
+              
+              <div class="hero-search-box">
+                <i class="fa-solid fa-magnifying-glass" style="margin-left: 1rem; color: var(--text-muted);"></i>
+                <input type="text" id="hero-search-input" placeholder="Search Tondaligan, Dawel Cruise, Matutina's, Bangus Fest..." onkeypress="app.handleHeroSearch(event)">
+                <button class="btn-primary" onclick="app.executeHeroSearch()">Search Spots</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CATEGORY FILTERS & SORT -->
+          <div class="filter-container">
+            <div class="section-header">
+              <div>
+                <h3 class="section-title">Explore <span class="gradient-text">Dagupan Attractions</span></h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Handpicked destinations and hidden gems in Dagupan City</p>
+              </div>
+              <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <select id="budget-filter-select" onchange="app.handleFilterChange()" style="background: var(--bg-card); color: var(--text-main); border: 1px solid var(--glass-border); padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); outline: none;">
+                  <option value="All">All Budgets</option>
+                  <option value="Free">Free Entrance</option>
+                  <option value="Budget">Budget Friendly</option>
+                  <option value="Moderate">Moderate</option>
+                  <option value="Luxury">Resort & Luxury</option>
+                </select>
+                <select id="sort-select" onchange="app.handleFilterChange()" style="background: var(--bg-card); color: var(--text-main); border: 1px solid var(--glass-border); padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); outline: none;">
+                  <option value="popularity">Most Popular</option>
+                  <option value="rating">Highest Rated</option>
+                  <option value="name">Name (A-Z)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="filter-pills">
+              <button class="filter-pill active" data-pill="All" onclick="app.filterPill('All')"><i class="fa-solid fa-border-all"></i> All Categories</button>
+              <button class="filter-pill" data-pill="Beaches" onclick="app.filterPill('Beaches')"><i class="fa-solid fa-umbrella-beach"></i> Beaches</button>
+              <button class="filter-pill" data-pill="Restaurants" onclick="app.filterPill('Restaurants')"><i class="fa-solid fa-utensils"></i> Restaurants</button>
+              <button class="filter-pill" data-pill="Landmarks" onclick="app.filterPill('Landmarks')"><i class="fa-solid fa-monument"></i> Landmarks</button>
+              <button class="filter-pill" data-pill="Eco-Tourism" onclick="app.filterPill('Eco-Tourism')"><i class="fa-solid fa-leaf"></i> Eco-Tourism</button>
+              <button class="filter-pill" data-pill="Festivals" onclick="app.filterPill('Festivals')"><i class="fa-solid fa-drum"></i> Festivals</button>
+              <button class="filter-pill" data-pill="Hotels" onclick="app.filterPill('Hotels')"><i class="fa-solid fa-hotel"></i> Hotels</button>
+            </div>
+          </div>
+
+          <!-- ATTRACTION CARDS GRID -->
+          <div class="content-area">
+            <div class="attractions-grid" id="attractions-grid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- TRAVEL PLANNER VIEW -->
+        <section id="view-planner" style="display: none; padding: 2rem;">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">My Travel <span class="gradient-text">Itinerary Planner</span></h2>
+              <p style="color: var(--text-muted);">Organize your trip to Dagupan City day-by-day</p>
+            </div>
+            <button class="btn-primary" onclick="app.printItinerary()"><i class="fa-solid fa-print"></i> Export / Print Plan</button>
+          </div>
+
+          <div class="planner-grid">
+            <div id="itinerary-days-container">
+              <!-- Days rendered via JS -->
+            </div>
+
+            <!-- Bookmarked Drawer -->
+            <div class="glass-panel" style="padding: 1.25rem;">
+              <h3 style="margin-bottom: 1rem; font-size: 1.1rem; display: flex; align-items: center; justify-content: space-between;">
+                <span><i class="fa-solid fa-heart" style="color: #ef4444;"></i> Saved Favorites</span>
+                <span class="budget-chip" id="saved-count-chip">0 Spots</span>
+              </h3>
+              <div id="saved-bookmarks-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <!-- Rendered JS -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN PORTAL VIEW -->
+        <section id="view-admin" style="display: none; padding: 2rem;">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Dagupan Tourism <span class="gradient-text">Admin Dashboard</span></h2>
+              <p style="color: var(--text-muted);">Manage attractions, review analytics, and post notices</p>
+            </div>
+            <button class="btn-primary" onclick="app.openAddAttractionModal()"><i class="fa-solid fa-plus"></i> Add New Attraction</button>
+          </div>
+
+          <!-- Analytics Summary Row -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+            <div class="glass-card" style="padding: 1.25rem;">
+              <div style="color: var(--text-muted); font-size: 0.85rem;">Total Monthly Visitors</div>
+              <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary-light); margin-top: 0.2rem;">48,920</div>
+            </div>
+            <div class="glass-card" style="padding: 1.25rem;">
+              <div style="color: var(--text-muted); font-size: 0.85rem;">Top Attraction</div>
+              <div style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-top: 0.2rem;">Tondaligan Park</div>
+            </div>
+            <div class="glass-card" style="padding: 1.25rem;">
+              <div style="color: var(--text-muted); font-size: 0.85rem;">Active Listings</div>
+              <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent); margin-top: 0.2rem;" id="admin-listings-count">10</div>
+            </div>
+          </div>
+
+          <!-- Attractions Management Table -->
+          <div class="glass-panel" style="padding: 1.5rem; overflow-x: auto;">
+            <h3 style="margin-bottom: 1rem;">Attraction Inventory & CRUD</h3>
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Attraction Name</th>
+                  <th>Category</th>
+                  <th>Budget</th>
+                  <th>Rating</th>
+                  <th>Reviews</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-table-body">
+                <!-- Rendered JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="app-footer">
+        <p><strong>Dagupan City Tourist Attraction Portal</strong> &copy; 2026. Made for Dagupan Tourism Board.</p>
+        <p style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--text-dim);">Celebrating the Bangus Capital of the World &bull; Tondaligan Boardwalk &bull; Dawel River Cruise</p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ATTRACTION DETAIL MODAL -->
+  <div class="modal-backdrop" id="detail-modal">
+    <div class="modal-container glass-panel">
+      <button class="modal-close-btn" onclick="app.closeModal('detail-modal')"><i class="fa-solid fa-xmark"></i></button>
+      <div id="detail-modal-content">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- AI TRAVEL ADVISOR MODAL -->
+  <div class="modal-backdrop" id="ai-modal">
+    <div class="modal-container glass-panel" style="max-width: 680px;">
+      <button class="modal-close-btn" onclick="app.closeModal('ai-modal')"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-body-padding">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+          <div class="brand-icon" style="background: linear-gradient(135deg, #a855f7, #ec4899);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <div>
+            <h3 style="font-size: 1.4rem;">AI Travel Concierge</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Personalized Dagupan Itinerary Generator</p>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">What are your main interests?</label>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="ai-interest-chips">
+              <label class="budget-chip" style="cursor: pointer;"><input type="checkbox" value="Beaches" checked> Beaches & Sunsets</label>
+              <label class="budget-chip" style="cursor: pointer;"><input type="checkbox" value="Restaurants" checked> Seafood & Bangus</label>
+              <label class="budget-chip" style="cursor: pointer;"><input type="checkbox" value="Eco-Tourism"> Eco Cruises & Nature</label>
+              <label class="budget-chip" style="cursor: pointer;"><input type="checkbox" value="Landmarks"> Culture & History</label>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">Trip Duration</label>
+              <select id="ai-duration" style="width: 100%; padding: 0.6rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #fff; border-radius: var(--radius-sm);">
+                <option value="Day Trip">1-Day Express Tour</option>
+                <option value="Weekend (2 Days)">Weekend Getaway (2 Days)</option>
+                <option value="3 Days Vacation">3-Day Vacation</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">Travel Group</label>
+              <select id="ai-group" style="width: 100%; padding: 0.6rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #fff; border-radius: var(--radius-sm);">
+                <option value="Family">Family with Kids</option>
+                <option value="Couple">Couple / Romantic</option>
+                <option value="Friends">Friends Group</option>
+                <option value="Solo Explorer">Solo Explorer</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn-primary" onclick="app.generateAiRecommendation()" style="justify-content: center; width: 100%; margin-top: 0.5rem;">
+            <i class="fa-solid fa-sparkles"></i> Generate AI Itinerary
+          </button>
+        </div>
+
+        <div id="ai-response-container" style="display: none; border-top: 1px solid var(--glass-border); padding-top: 1rem;">
+          <!-- AI recommendation output -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN LOGIN MODAL -->
+  <div class="modal-backdrop" id="admin-login-modal">
+    <div class="modal-container glass-panel" style="max-width: 420px;">
+      <button class="modal-close-btn" onclick="app.closeModal('admin-login-modal')"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-body-padding">
+        <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">Admin Authentication</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">Enter administrator credentials to manage listings.</p>
+
+        <form onsubmit="app.handleAdminLogin(event)">
+          <div style="margin-bottom: 1rem;">
+            <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Username</label>
+            <input type="text" id="admin-user-input" value="admin" style="width: 100%; padding: 0.6rem 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: #fff; border-radius: var(--radius-sm);" required>
+          </div>
+          <div style="margin-bottom: 1.5rem;">
+            <label style="font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Password</label>
+            <input type="password" id="admin-pass-input" value="dagupan2026" style="width: 100%; padding: 0.6rem 0.8rem; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: #fff; border-radius: var(--radius-sm);" required>
+          </div>
+          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Login to Dashboard</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD / EDIT ATTRACTION MODAL -->
+  <div class="modal-backdrop" id="add-attraction-modal">
+    <div class="modal-container glass-panel" style="max-width: 600px;">
+      <button class="modal-close-btn" onclick="app.closeModal('add-attraction-modal')"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-body-padding">
+        <h3 style="font-size: 1.3rem; margin-bottom: 1.25rem;">Create New Dagupan Attraction</h3>
+        
+        <form onsubmit="app.handleSaveAttraction(event)">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <label style="font-size: 0.85rem; color: var(--text-muted);">Attraction Name</label>
+              <input type="text" id="attr-form-name" style="width: 100%; padding: 0.6rem; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: #fff; border-radius: var(--radius-sm);" required>
+            </div>
+            <div>
+              <label style="font-size: 0.85rem; color: var(--text-muted);">Category</label>
+              <select id="attr-form-category" style="width: 100%; padding: 0.6rem; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: #fff; border-radius: var(--radius-sm);">
+                <option value="Beaches">Beaches</option>
+                <option value="Restaurants">Restaurants</option>
+                <option value="Landmarks">Landmarks</option>
+                <option value="Eco-Tourism">Eco-Tourism</option>
+                <option value="Festivals">Festivals</option>
+                <option value="Hotels">Hotels</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <label style="font-size: 0.85rem; color: var(--text-muted);">Budget Category</label>
+              <select id="attr-form-budget" style="width: 100%; padding: 0.6rem; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: #fff; border-radius: var(--radius-sm);">
+                <option value="Free">Free</option>
+                <option value="Budget">Budget</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Luxury">Luxury</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.85rem; color: var(--text-muted);">Price Range / Fee</label>
+              <input type="text" id="attr-form-price" placeholder="e.g. ₱150 - ₱300" style="width: 100%; padding: 0.6rem; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: #fff; border-radius: var(--radius-sm);">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label style="font-size: 0.85rem; color: var(--text-muted);">Location Address</label>
+            <input type="text" id="attr-form-location" placeholder="e.g. Bonuan Tondaligan, Dagupan City" style="width: 100%; padding: 0.6rem; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: #fff; border-radius: var(--radius-sm);" required>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label style="font-size: 0.85rem; color: var(--text-muted);">Description</label>
+            <textarea id="attr-form-desc" rows="3" style="width: 100%; padding: 0.6rem; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); color: #fff; border-radius: var(--radius-sm);" required></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Save Attraction</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Main App Logic -->
+  <script src="/app.js"></script>
+</body>
+</html>

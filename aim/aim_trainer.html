@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate 3D Aim & Reaction Trainer</title>
+<style>
+  :root {
+    --bg-dark: #050d08;
+    --bg-card: rgba(10, 26, 17, 0.92);
+    --border-green: rgba(0, 255, 102, 0.3);
+    --primary-green: #00ff66;
+    --accent-emerald: #10b981;
+    --dim-green: #064e3b;
+    --target-yellow: #ffee00;
+    --target-glow: #ffff00;
+    --text-main: #ecfdf5;
+    --text-muted: #6ee7b7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; user-select: none; }
+  body { overflow: hidden; background: var(--bg-dark); color: var(--text-main); height: 100vh; width: 100vw; }
+
+  canvas { display: block; width: 100%; height: 100%; }
+
+  /* OVERLAYS & UI PANELS */
+  .overlay {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at center, rgba(6, 25, 15, 0.88) 0%, rgba(3, 10, 6, 0.97) 100%);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 20; backdrop-filter: blur(12px);
+    transition: opacity 0.25s ease;
+  }
+
+  .main-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-green);
+    box-shadow: 0 0 40px rgba(0, 255, 102, 0.12), inset 0 0 20px rgba(0, 255, 102, 0.05);
+    border-radius: 16px;
+    padding: 28px;
+    width: 92%;
+    max-width: 760px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+
+  .title-group { text-align: center; }
+  .title-group h1 {
+    font-size: 34px; font-weight: 900; letter-spacing: 4px;
+    background: linear-gradient(135deg, #a7f3d0 0%, #00ff66 50%, #facc15 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-transform: uppercase; text-shadow: 0 0 30px rgba(0, 255, 102, 0.3);
+  }
+  .title-group p { font-size: 12px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+
+  /* MODE SELECTOR TABS */
+  .mode-selector {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    background: rgba(4, 16, 10, 0.6); padding: 6px; border-radius: 10px;
+    border: 1px solid rgba(0, 255, 102, 0.15);
+  }
+  .mode-btn {
+    padding: 10px 6px; border: none; background: transparent; color: #a7f3d0;
+    font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer;
+    transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; text-align: center;
+  }
+  .mode-btn:hover { background: rgba(0, 255, 102, 0.1); color: #fff; }
+  .mode-btn.active {
+    background: linear-gradient(135deg, #059669, #00ff66);
+    color: #022c22; font-weight: 900; box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+  }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-size: 11px; font-weight: 800; color: #00ff66; text-transform: uppercase;
+    letter-spacing: 2px; border-bottom: 1px solid rgba(0, 255, 102, 0.15);
+    padding-bottom: 4px; margin-top: 4px;
+  }
+
+  /* SETTINGS GRID */
+  .settings-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    background: rgba(0, 0, 0, 0.25); padding: 14px; border-radius: 12px;
+    border: 1px solid rgba(0, 255, 102, 0.1);
+  }
+  .setting-item { display: flex; flex-direction: column; gap: 4px; }
+  .setting-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; }
+  .setting-label span { color: #facc15; font-weight: 900; }
+  
+  select, input[type="range"] {
+    width: 100%; accent-color: var(--primary-green);
+  }
+  select {
+    background: #06190f; color: #ecfdf5; border: 1px solid var(--border-green);
+    padding: 6px 10px; border-radius: 6px; outline: none; cursor: pointer; font-size: 12px;
+  }
+  select:focus { border-color: var(--primary-green); box-shadow: 0 0 10px rgba(0,255,102,0.3); }
+
+  /* CROSSHAIR PREVIEW BOX */
+  .ch-preview-container {
+    display: flex; align-items: center; gap: 12px; background: rgba(2, 10, 6, 0.6);
+    padding: 10px; border-radius: 8px; border: 1px solid rgba(0, 255, 102, 0.15);
+    grid-column: span 2;
+  }
+  .ch-preview-box {
+    width: 64px; height: 64px; background: #081a10; border: 1px solid rgba(0, 255, 102, 0.3);
+    border-radius: 8px; position: relative; display: flex; justify-content: center; align-items: center;
+    overflow: hidden;
+  }
+
+  /* BUTTONS */
+  .btn-primary {
+    padding: 14px; font-size: 15px; font-weight: 900; letter-spacing: 3px;
+    text-transform: uppercase; background: linear-gradient(135deg, #00ff66 0%, #059669 100%);
+    color: #022c22; border: none; border-radius: 10px; cursor: pointer;
+    box-shadow: 0 0 25px rgba(0, 255, 102, 0.35); transition: all 0.2s ease;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px); box-shadow: 0 0 35px rgba(0, 255, 102, 0.5); background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* STATS MODAL CARDS */
+  .stats-card {
+    background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(250, 204, 21, 0.3);
+    border-radius: 12px; padding: 16px; text-align: center; display: none;
+    flex-direction: column; gap: 6px; margin-bottom: 6px;
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.1);
+  }
+  .stats-card .metric-val { font-size: 42px; font-weight: 900; color: #facc15; text-shadow: 0 0 15px rgba(250,204,21,0.4); }
+  .stats-card .metric-lbl { font-size: 11px; color: #a7f3d0; text-transform: uppercase; letter-spacing: 2px; }
+  .stats-details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+  .sub-stat { background: rgba(6, 25, 15, 0.6); padding: 6px; border-radius: 6px; border: 1px solid rgba(0, 255, 102, 0.15); }
+  .sub-stat-val { font-size: 16px; font-weight: 800; color: #00ff66; }
+  .sub-stat-lbl { font-size: 9px; color: #6ee7b7; text-transform: uppercase; }
+
+  /* HUD INTERFACE */
+  #hud {
+    position: absolute; top: 0; left: 0; right: 0;
+    pointer-events: none; z-index: 10; padding: 18px 24px;
+    display: none; justify-content: space-between; align-items: flex-start;
+  }
+  .hud-box {
+    background: rgba(6, 20, 13, 0.75); border: 1px solid rgba(0, 255, 102, 0.25);
+    padding: 8px 16px; border-radius: 10px; text-align: center;
+    backdrop-filter: blur(8px); box-shadow: 0 0 15px rgba(0,255,102,0.1);
+  }
+  .hud-val { font-size: 28px; font-weight: 900; color: #00ff66; font-family: monospace; line-height: 1; }
+  .hud-val.yellow { color: #facc15; text-shadow: 0 0 10px rgba(250,204,21,0.5); }
+  .hud-label { font-size: 9px; color: #a7f3d0; text-transform: uppercase; letter-spacing: 2px; margin-top: 2px; }
+
+  #timerProgress {
+    position: absolute; bottom: 0; left: 0; height: 4px;
+    background: linear-gradient(90deg, #00ff66, #facc15); width: 100%;
+    transform-origin: left; transition: transform 0.1s linear; z-index: 12;
+  }
+
+  /* REACTION TIME IN-GAME PROMPT */
+  #reactionPrompt {
+    position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%);
+    z-index: 15; pointer-events: none; display: none; text-align: center;
+  }
+  #reactionPrompt .prompt-main {
+    font-size: 42px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase;
+    color: #facc15; text-shadow: 0 0 25px rgba(250,204,21,0.8);
+  }
+  #reactionPrompt .prompt-sub {
+    font-size: 16px; color: #a7f3d0; letter-spacing: 2px; margin-top: 8px;
+  }
+
+  /* DYNAMIC CROSSHAIR IMPLEMENTATION */
+  .crosshair-wrapper {
+    position: absolute; pointer-events: none; z-index: 10;
+  }
+  #hudCrosshair {
+    top: 50%; left: 50%; transform: translate(-50%, -50%); display: none;
+  }
+  .ch-line-dynamic {
+    position: absolute; background-color: var(--ch-color, #00ff66);
+    box-shadow: 0 0 4px var(--ch-color, #00ff66);
+  }
+  .ch-dot-dynamic {
+    position: absolute; background-color: var(--ch-color, #00ff66);
+    border-radius: 50%; transform: translate(-50%, -50%); top: 50%; left: 50%;
+    box-shadow: 0 0 4px var(--ch-color, #00ff66);
+  }
+
+  /* HITMARKER */
+  #hitmarker {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    pointer-events: none; z-index: 11; display: none; width: 24px; height: 24px;
+    opacity: 0; transition: opacity 0.05s ease;
+  }
+  #hitmarker::before, #hitmarker::after {
+    content: ''; position: absolute; background: #facc15;
+    box-shadow: 0 0 6px #facc15; width: 10px; height: 2px; top: 50%; left: 50%;
+  }
+  #hitmarker::before { transform: translate(-50%, -50%) rotate(45deg); }
+  #hitmarker::after  { transform: translate(-50%, -50%) rotate(-45deg); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+  ::-webkit-scrollbar-thumb { background: var(--dim-green); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--primary-green); }
+</style>
+
+<!-- Import Three.js module -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+
+<!-- UI OVERLAY -->
+<div id="overlay" class="overlay">
+  <div class="main-card">
+    <div class="title-group">
+      <h1>Aim & Reaction Trainer</h1>
+      <p>Dark Emerald Edition &bull; Head/Crouch Targets</p>
+    </div>
+
+    <!-- MODE TABS -->
+    <div class="mode-selector">
+      <button class="mode-btn active" data-mode="flick">Flick Shot</button>
+      <button class="mode-btn" data-mode="reaction">Reaction Time</button>
+      <button class="mode-btn" data-mode="tracking">3D Tracking</button>
+    </div>
+
+    <!-- STATS SUMMARY CARD (Appears after round) -->
+    <div id="statsCard" class="stats-card">
+      <div class="metric-lbl" id="mainStatLabel">Final Score</div>
+      <div class="metric-val" id="mainStatValue">0</div>
+      <div class="stats-details" id="statsDetails">
+        <div class="sub-stat">
+          <div class="sub-stat-val" id="subStat1">0%</div>
+          <div class="sub-stat-lbl" id="subStatLbl1">Accuracy</div>
+        </div>
+        <div class="sub-stat">
+          <div class="sub-stat-val" id="subStat2">0</div>
+          <div class="sub-stat-lbl" id="subStatLbl2">Hits</div>
+        </div>
+        <div class="sub-stat">
+          <div class="sub-stat-val" id="subStat3">0.0</div>
+          <div class="sub-stat-lbl" id="subStatLbl3">KPS</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAMEPLAY SETTINGS -->
+    <div class="section-title">Gameplay & Target Height</div>
+    <div class="settings-grid">
+      <div class="setting-item">
+        <div class="setting-label">Target Height Level</div>
+        <select id="heightLevelSelect">
+          <option value="mixed" selected>Mixed (Head & Crouch)</option>
+          <option value="head">Head Level Only (1.65m)</option>
+          <option value="crouch">Crouch Level Only (1.0m)</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <div class="setting-label">Target Size <span id="targetSizeVal">Medium</span></div>
+        <select id="targetSizeSelect">
+          <option value="0.2">Small (Hard)</option>
+          <option value="0.35" selected>Medium (Standard)</option>
+          <option value="0.5">Large (Easy)</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <div class="setting-label">Sensitivity <span id="sensVal">1.0</span></div>
+        <input type="range" id="sensInput" min="0.1" max="5.0" step="0.1" value="1.0">
+      </div>
+      <div class="setting-item">
+        <div class="setting-label">Field of View <span id="fovVal">90°</span></div>
+        <input type="range" id="fovInput" min="60" max="110" step="1" value="90">
+      </div>
+      <div class="setting-item">
+        <div class="setting-label">Tracking Speed</div>
+        <select id="speedSelect">
+          <option value="1">Slow</option>
+          <option value="1.8" selected>Normal</option>
+          <option value="2.8">Fast</option>
+          <option value="4.0">Insane</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <div class="setting-label">Duration <span id="durationVal">30s</span></div>
+        <select id="durationSelect">
+          <option value="15">15 Seconds</option>
+          <option value="30" selected>30 Seconds</option>
+          <option value="60">60 Seconds</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- CROSSHAIR CUSTOMIZATION SETTINGS -->
+    <div class="section-title">Crosshair Settings</div>
+    <div class="settings-grid">
+      <div class="ch-preview-container">
+        <div class="ch-preview-box">
+          <div id="previewCrosshair" class="crosshair-wrapper" style="display:block;"></div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:12px; font-weight:800; color:#00ff66;">CROSSHAIR PREVIEW</div>
+          <div style="font-size:10px; color:#6ee7b7; margin-top:2px;">Adjust color, style, gap, and size below</div>
+        </div>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">Color</div>
+        <select id="chColorSelect">
+          <option value="#00ff66" selected>Neon Green</option>
+          <option value="#00ffff">Cyan</option>
+          <option value="#ffff00">Yellow</option>
+          <option value="#ff4655">Valorant Red</option>
+          <option value="#ffffff">White</option>
+          <option value="#ff66cc">Pink</option>
+        </select>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">Style</div>
+        <select id="chStyleSelect">
+          <option value="cross_dot" selected>Crosshair + Dot</option>
+          <option value="cross">Crosshair Only</option>
+          <option value="dot">Dot Only</option>
+          <option value="circle">Circle</option>
+        </select>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">Length <span id="chLengthVal">7px</span></div>
+        <input type="range" id="chLengthInput" min="2" max="18" step="1" value="7">
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">Thickness <span id="chThickVal">2px</span></div>
+        <input type="range" id="chThickInput" min="1" max="4" step="1" value="2">
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">Gap <span id="chGapVal">3px</span></div>
+        <input type="range" id="chGapInput" min="0" max="12" step="1" value="3">
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">Center Dot Size <span id="chDotVal">3px</span></div>
+        <input type="range" id="chDotInput" min="1" max="6" step="1" value="3">
+      </div>
+    </div>
+
+    <button id="startBtn" class="btn-primary">Start Training</button>
+  </div>
+</div>
+
+<!-- IN-GAME HUD -->
+<div id="hud">
+  <div class="hud-box">
+    <div class="hud-val yellow" id="hudStatPrimary">0</div>
+    <div class="hud-label" id="hudStatPrimaryLbl">Score</div>
+  </div>
+  <div class="hud-box" style="margin: 0 15px;">
+    <div class="hud-val" id="hudStatSecondary">100%</div>
+    <div class="hud-label" id="hudStatSecondaryLbl">Accuracy</div>
+  </div>
+  <div class="hud-box">
+    <div class="hud-val" id="hudTimer">30</div>
+    <div class="hud-label">Seconds</div>
+  </div>
+</div>
+
+<div id="timerProgress"></div>
+
+<!-- REACTION MODE TEXT DISPLAY -->
+<div id="reactionPrompt">
+  <div class="prompt-main" id="promptMain">WAIT FOR YELLOW...</div>
+  <div class="prompt-sub" id="promptSub">Do not click yet</div>
+</div>
+
+<!-- IN-GAME HUD CROSSHAIR -->
+<div id="hudCrosshair" class="crosshair-wrapper"></div>
+
+<!-- HITMARKER -->
+<div id="hitmarker"></div>
+
+<!-- MAIN THREE.JS SCRIPT -->
+<script type="module">
+import * as THREE from 'three';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+/* ─────────────────────────────────────────────────────────────
+   AUDIO SYNTHESIZER (Web Audio API)
+───────────────────────────────────────────────────────────── */
+class SoundEngine {
+  constructor() {
+    this.ctx = null;
+    this.enabled = true;
+  }
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      this.ctx = new AudioCtx();
+    }
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+  playHit() {
+    if (!this.enabled || !this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1320, this.ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.08);
+  }
+  playReactionCue() {
+    if (!this.enabled || !this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(523.25, this.ctx.currentTime);
+    osc.frequency.setValueAtTime(1046.5, this.ctx.currentTime + 0.05);
+    gain.gain.setValueAtTime(0.4, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.15);
+  }
+  playMiss() {
+    if (!this.enabled || !this.ctx) return;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(90, this.ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.1);
+  }
+}
+
+const sounds = new SoundEngine();
+
+/* ─────────────────────────────────────────────────────────────
+   GLOBAL STATE & CONFIG
+───────────────────────────────────────────────────────────── */
+const state = {
+  mode: 'flick', // 'flick', 'reaction', 'tracking'
+  sensitivity: 1.0,
+  fov: 90,
+  targetRadius: 0.35,
+  heightLevel: 'mixed', // 'mixed', 'head', 'crouch'
+  trackingSpeedMult: 1.8,
+  duration: 30,
+  sound: true,
+
+  // Crosshair State
+  crosshair: {
+    color: '#00ff66',
+    style: 'cross_dot', // 'cross_dot', 'cross', 'dot', 'circle'
+    length: 7,
+    thickness: 2,
+    gap: 3,
+    dotSize: 3
+  },
+
+  // Heights: Head level ~1.65m, Crouch level ~1.0m
+  HEAD_HEIGHT: 1.65,
+  CROUCH_HEIGHT: 1.0,
+
+  // Runtime
+  gameRunning: false,
+  score: 0,
+  totalShots: 0,
+  hits: 0,
+  timeLeft: 30,
+  
+  // Reaction Mode state
+  reactionState: 'idle',
+  reactionStartTime: 0,
+  reactionTrials: [],
+  reactionTimerTimeout: null,
+
+  // Tracking Mode state
+  trackingTimeOnTarget: 0,
+  trackingTotalTime: 0,
+  isCurrentlyTracking: false,
+  trackingPathAngle: 0,
+};
+
+let camera, scene, renderer, controls;
+let raycaster;
+const CENTER = new THREE.Vector2(0, 0);
+
+// Meshes & Materials
+let targetMaterial, trackingTrackedMaterial, darkReactionMaterial;
+let targets = [], targetMeshes = [];
+let particles = [];
+
+// Timers
+let gameInterval = null, spawnInterval = null;
+const clock = new THREE.Clock();
+
+/* ─────────────────────────────────────────────────────────────
+   INITIALIZATION
+───────────────────────────────────────────────────────────── */
+function initEngine() {
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x040e08);
+  scene.fog = new THREE.FogExp2(0x040e08, 0.015);
+
+  const ambientLight = new THREE.AmbientLight(0x00ff66, 0.25);
+  scene.add(ambientLight);
+
+  const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+  mainLight.position.set(10, 25, 10);
+  mainLight.castShadow = true;
+  scene.add(mainLight);
+
+  const greenSpot = new THREE.PointLight(0x00ff66, 2, 40);
+  greenSpot.position.set(0, 8, -10);
+  scene.add(greenSpot);
+
+  camera = new THREE.PerspectiveCamera(state.fov, innerWidth / innerHeight, 0.05, 500);
+  camera.position.set(0, 1.65, 0); // Player eye height at standard 1.65m
+
+  controls = new PointerLockControls(camera, document.body);
+  scene.add(controls.getObject());
+
+  raycaster = new THREE.Raycaster();
+
+  targetMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffea00,
+    emissive: 0xffff00,
+    emissiveIntensity: 0.7,
+    roughness: 0.2,
+    metalness: 0.3
+  });
+
+  trackingTrackedMaterial = new THREE.MeshStandardMaterial({
+    color: 0x00ff66,
+    emissive: 0x00ff66,
+    emissiveIntensity: 1.0,
+    roughness: 0.1,
+    metalness: 0.5
+  });
+
+  darkReactionMaterial = new THREE.MeshStandardMaterial({
+    color: 0x112217,
+    roughness: 0.9,
+    metalness: 0.1
+  });
+
+  buildArena();
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  document.body.appendChild(renderer.domElement);
+
+  setupEventListeners();
+  renderCrosshairs();
+  animate();
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ENVIRONMENT SETUP
+───────────────────────────────────────────────────────────── */
+function buildArena() {
+  // Floor
+  const floorGeo = new THREE.PlaneGeometry(200, 200);
+  const floorMat = new THREE.MeshStandardMaterial({ color: 0x06140b, roughness: 0.8 });
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  // Grid lines
+  const grid = new THREE.GridHelper(200, 80, 0x00ff66, 0x0a331a);
+  grid.position.y = 0.01;
+  scene.add(grid);
+
+  // Backdrop Wall
+  const wallGeo = new THREE.PlaneGeometry(60, 22);
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0x081c10, roughness: 0.5 });
+  const wall = new THREE.Mesh(wallGeo, wallMat);
+  wall.position.set(0, 10, -25);
+  wall.receiveShadow = true;
+  scene.add(wall);
+
+  // Reference lines for Head Level (1.65m) and Crouch Level (1.0m)
+  const headLineMat = new THREE.LineBasicMaterial({ color: 0x00ff66, transparent: true, opacity: 0.35 });
+  const headLineGeo = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-25, state.HEAD_HEIGHT, -24.8),
+    new THREE.Vector3(25, state.HEAD_HEIGHT, -24.8)
+  ]);
+  const headLine = new THREE.Line(headLineGeo, headLineMat);
+  scene.add(headLine);
+
+  const crouchLineMat = new THREE.LineBasicMaterial({ color: 0xfacc15, transparent: true, opacity: 0.35 });
+  const crouchLineGeo = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-25, state.CROUCH_HEIGHT, -24.8),
+    new THREE.Vector3(25, state.CROUCH_HEIGHT, -24.8)
+  ]);
+  const crouchLine = new THREE.Line(crouchLineGeo, crouchLineMat);
+  scene.add(crouchLine);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DYNAMIC CROSSHAIR RENDERER
+───────────────────────────────────────────────────────────── */
+function renderCrosshairs() {
+  const preview = document.getElementById('previewCrosshair');
+  const hudCH = document.getElementById('hudCrosshair');
+
+  const html = generateCrosshairHTML(state.crosshair);
+  preview.innerHTML = html;
+  hudCH.innerHTML = html;
+}
+
+function generateCrosshairHTML(ch) {
+  let inner = '';
+  const col = ch.color;
+  const l = ch.length;
+  const t = ch.thickness;
+  const g = ch.gap;
+  const d = ch.dotSize;
+
+  if (ch.style === 'circle') {
+    const size = (l + g) * 2;
+    inner = `<div style="width:${size}px; height:${size}px; border:${t}px solid ${col}; border-radius:50%; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); box-shadow:0 0 4px ${col};"></div>`;
+  } else {
+    // Cross lines
+    if (ch.style === 'cross' || ch.style === 'cross_dot') {
+      inner += `
+        <div class="ch-line-dynamic" style="width:${t}px; height:${l}px; top:calc(50% - ${g + l}px); left:calc(50% - ${t/2}px); background:${col}; box-shadow:0 0 4px ${col};"></div>
+        <div class="ch-line-dynamic" style="width:${t}px; height:${l}px; top:calc(50% + ${g}px); left:calc(50% - ${t/2}px); background:${col}; box-shadow:0 0 4px ${col};"></div>
+        <div class="ch-line-dynamic" style="width:${l}px; height:${t}px; left:calc(50% - ${g + l}px); top:calc(50% - ${t/2}px); background:${col}; box-shadow:0 0 4px ${col};"></div>
+        <div class="ch-line-dynamic" style="width:${l}px; height:${t}px; left:calc(50% + ${g}px); top:calc(50% - ${t/2}px); background:${col}; box-shadow:0 0 4px ${col};"></div>
+      `;
+    }
+    // Center Dot
+    if (ch.style === 'dot' || ch.style === 'cross_dot') {
+      inner += `<div class="ch-dot-dynamic" style="width:${d}px; height:${d}px; background:${col}; box-shadow:0 0 4px ${col};"></div>`;
+    }
+  }
+
+  return `<div style="position:relative; width:40px; height:40px;">${inner}</div>`;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   EVENT LISTENERS & BINDINGS
+───────────────────────────────────────────────────────────── */
+function setupEventListeners() {
+  const overlay = document.getElementById('overlay');
+  const startBtn = document.getElementById('startBtn');
+  const hudCrosshair = document.getElementById('hudCrosshair');
+  const hud = document.getElementById('hud');
+
+  // Mode Selector Tabs
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.mode = btn.dataset.mode;
+      document.getElementById('statsCard').style.display = 'none';
+    });
+  });
+
+  // Target Height Level
+  document.getElementById('heightLevelSelect').addEventListener('change', (e) => {
+    state.heightLevel = e.target.value;
+  });
+
+  // Settings inputs
+  const sensInput = document.getElementById('sensInput');
+  sensInput.addEventListener('input', (e) => {
+    state.sensitivity = parseFloat(e.target.value);
+    document.getElementById('sensVal').textContent = state.sensitivity.toFixed(1);
+  });
+
+  const fovInput = document.getElementById('fovInput');
+  fovInput.addEventListener('input', (e) => {
+    state.fov = parseInt(e.target.value);
+    document.getElementById('fovVal').textContent = `${state.fov}°`;
+    if (camera) {
+      camera.fov = state.fov;
+      camera.updateProjectionMatrix();
+    }
+  });
+
+  document.getElementById('targetSizeSelect').addEventListener('change', (e) => {
+    state.targetRadius = parseFloat(e.target.value);
+  });
+
+  document.getElementById('speedSelect').addEventListener('change', (e) => {
+    state.trackingSpeedMult = parseFloat(e.target.value);
+  });
+
+  document.getElementById('durationSelect').addEventListener('change', (e) => {
+    state.duration = parseInt(e.target.value);
+    document.getElementById('durationVal').textContent = `${state.duration}s`;
+  });
+
+  // Crosshair Listeners
+  document.getElementById('chColorSelect').addEventListener('change', (e) => {
+    state.crosshair.color = e.target.value;
+    renderCrosshairs();
+  });
+
+  document.getElementById('chStyleSelect').addEventListener('change', (e) => {
+    state.crosshair.style = e.target.value;
+    renderCrosshairs();
+  });
+
+  document.getElementById('chLengthInput').addEventListener('input', (e) => {
+    state.crosshair.length = parseInt(e.target.value);
+    document.getElementById('chLengthVal').textContent = `${state.crosshair.length}px`;
+    renderCrosshairs();
+  });
+
+  document.getElementById('chThickInput').addEventListener('input', (e) => {
+    state.crosshair.thickness = parseInt(e.target.value);
+    document.getElementById('chThickVal').textContent = `${state.crosshair.thickness}px`;
+    renderCrosshairs();
+  });
+
+  document.getElementById('chGapInput').addEventListener('input', (e) => {
+    state.crosshair.gap = parseInt(e.target.value);
+    document.getElementById('chGapVal').textContent = `${state.crosshair.gap}px`;
+    renderCrosshairs();
+  });
+
+  document.getElementById('chDotInput').addEventListener('input', (e) => {
+    state.crosshair.dotSize = parseInt(e.target.value);
+    document.getElementById('chDotVal').textContent = `${state.crosshair.dotSize}px`;
+    renderCrosshairs();
+  });
+
+  // Start Button -> PointerLock
+  startBtn.addEventListener('click', () => {
+    sounds.init();
+    controls.lock();
+  });
+
+  controls.addEventListener('lock', () => {
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 250);
+    hudCrosshair.style.display = 'block';
+    hud.style.display = 'flex';
+    if (!state.gameRunning) {
+      startGameSession();
+    }
+  });
+
+  controls.addEventListener('unlock', () => {
+    overlay.style.display = 'flex';
+    setTimeout(() => { overlay.style.opacity = '1'; }, 10);
+    hudCrosshair.style.display = 'none';
+    hud.style.display = 'none';
+    document.getElementById('reactionPrompt').style.display = 'none';
+
+    if (state.gameRunning && state.mode !== 'reaction') {
+      endGameSession();
+    }
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!controls.isLocked) return;
+    if (state.sensitivity !== 1.0) {
+      const eular = new THREE.Euler(0, 0, 0, 'YXZ');
+      eular.setFromQuaternion(camera.quaternion);
+      const factor = (state.sensitivity - 1.0) * 0.002;
+      eular.y -= e.movementX * factor;
+      eular.x -= e.movementY * factor;
+      eular.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, eular.x));
+      camera.quaternion.setFromEuler(eular);
+    }
+  });
+
+  document.addEventListener('mousedown', onPlayerClick);
+
+  window.addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TARGET HEIGHT CALCULATOR (HEAD LEVEL & CROUCH LEVEL)
+───────────────────────────────────────────────────────────── */
+function getTargetYHeight() {
+  if (state.heightLevel === 'head') {
+    // Head level (1.65m ± 0.05m micro variation)
+    return state.HEAD_HEIGHT + (Math.random() - 0.5) * 0.1;
+  } else if (state.heightLevel === 'crouch') {
+    // Crouch level (1.0m ± 0.05m micro variation)
+    return state.CROUCH_HEIGHT + (Math.random() - 0.5) * 0.1;
+  } else {
+    // Mixed: 50% chance Head level, 50% chance Crouch level
+    const isHead = Math.random() > 0.5;
+    const baseY = isHead ? state.HEAD_HEIGHT : state.CROUCH_HEIGHT;
+    return baseY + (Math.random() - 0.5) * 0.1;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GAME LOGIC & FLOW
+───────────────────────────────────────────────────────────── */
+function startGameSession() {
+  state.gameRunning = true;
+  state.score = 0;
+  state.totalShots = 0;
+  state.hits = 0;
+  state.timeLeft = state.duration;
+  state.trackingTimeOnTarget = 0;
+  state.trackingTotalTime = 0;
+  state.reactionTrials = [];
+  state.trackingPathAngle = 0;
+
+  clearTargets();
+  updateHUDLabels();
+
+  document.getElementById('timerProgress').style.transform = 'scaleX(1)';
+
+  if (state.mode === 'flick') {
+    for (let i = 0; i < 6; i++) spawnYellowTarget();
+    startTimerInterval();
+  } else if (state.mode === 'tracking') {
+    spawnTrackingTarget();
+    startTimerInterval();
+  } else if (state.mode === 'reaction') {
+    document.getElementById('hud').style.display = 'none';
+    startReactionTrial();
+  }
+}
+
+function updateHUDLabels() {
+  const pVal = document.getElementById('hudStatPrimary');
+  const pLbl = document.getElementById('hudStatPrimaryLbl');
+  const sVal = document.getElementById('hudStatSecondary');
+  const sLbl = document.getElementById('hudStatSecondaryLbl');
+  const tVal = document.getElementById('hudTimer');
+
+  if (state.mode === 'flick') {
+    pLbl.textContent = 'Score';
+    pVal.textContent = '0';
+    sLbl.textContent = 'Accuracy';
+    sVal.textContent = '100%';
+    tVal.textContent = state.timeLeft;
+  } else if (state.mode === 'tracking') {
+    pLbl.textContent = 'On Target';
+    pVal.textContent = '0.0s';
+    sLbl.textContent = 'Tracking %';
+    sVal.textContent = '0%';
+    tVal.textContent = state.timeLeft;
+  } else if (state.mode === 'reaction') {
+    pLbl.textContent = 'Trial';
+    pVal.textContent = '1/5';
+    sLbl.textContent = 'Avg Latency';
+    sVal.textContent = '--- ms';
+  }
+}
+
+function startTimerInterval() {
+  clearInterval(gameInterval);
+  gameInterval = setInterval(() => {
+    if (!controls.isLocked || !state.gameRunning) return;
+    state.timeLeft--;
+    document.getElementById('hudTimer').textContent = state.timeLeft;
+    const pct = Math.max(0, state.timeLeft / state.duration);
+    document.getElementById('timerProgress').style.transform = `scaleX(${pct})`;
+
+    if (state.timeLeft <= 0) {
+      endGameSession();
+    }
+  }, 1000);
+}
+
+function endGameSession() {
+  state.gameRunning = false;
+  clearInterval(gameInterval);
+  clearInterval(spawnInterval);
+  clearTimeout(state.reactionTimerTimeout);
+  clearTargets();
+
+  if (controls.isLocked) controls.unlock();
+
+  const statsCard = document.getElementById('statsCard');
+  const mainVal = document.getElementById('mainStatValue');
+  const mainLbl = document.getElementById('mainStatLabel');
+
+  if (state.mode === 'flick') {
+    const accuracy = state.totalShots > 0 ? Math.round((state.hits / state.totalShots) * 100) : 0;
+    const kps = (state.hits / state.duration).toFixed(1);
+
+    mainLbl.textContent = 'Final Score';
+    mainVal.textContent = state.score;
+
+    document.getElementById('subStatLbl1').textContent = 'Accuracy';
+    document.getElementById('subStat1').textContent = `${accuracy}%`;
+    document.getElementById('subStatLbl2').textContent = 'Hits / Shots';
+    document.getElementById('subStat2').textContent = `${state.hits}/${state.totalShots}`;
+    document.getElementById('subStatLbl3').textContent = 'Hits / Sec';
+    document.getElementById('subStat3').textContent = kps;
+  } else if (state.mode === 'tracking') {
+    const trackPct = state.trackingTotalTime > 0 
+      ? Math.round((state.trackingTimeOnTarget / state.trackingTotalTime) * 100) 
+      : 0;
+
+    mainLbl.textContent = 'Tracking Score';
+    mainVal.textContent = `${trackPct}%`;
+
+    document.getElementById('subStatLbl1').textContent = 'On Target';
+    document.getElementById('subStat1').textContent = `${state.trackingTimeOnTarget.toFixed(1)}s`;
+    document.getElementById('subStatLbl2').textContent = 'Total Time';
+    document.getElementById('subStat2').textContent = `${state.trackingTotalTime.toFixed(1)}s`;
+    document.getElementById('subStatLbl3').textContent = 'Smoothness';
+    document.getElementById('subStat3').textContent = trackPct > 70 ? 'Optimal' : 'Moderate';
+  } else if (state.mode === 'reaction') {
+    const avg = state.reactionTrials.length > 0 
+      ? Math.round(state.reactionTrials.reduce((a,b)=>a+b,0) / state.reactionTrials.length) 
+      : 0;
+    const best = state.reactionTrials.length > 0 ? Math.min(...state.reactionTrials) : 0;
+
+    mainLbl.textContent = 'Avg Reaction';
+    mainVal.textContent = avg > 0 ? `${avg} ms` : 'N/A';
+
+    document.getElementById('subStatLbl1').textContent = 'Best Trial';
+    document.getElementById('subStat1').textContent = best > 0 ? `${best} ms` : 'N/A';
+    document.getElementById('subStatLbl2').textContent = 'Completed';
+    document.getElementById('subStat2').textContent = `${state.reactionTrials.length}/5`;
+    document.getElementById('subStatLbl3').textContent = 'Rating';
+    document.getElementById('subStat3').textContent = avg < 200 ? 'Pro Grade' : (avg < 260 ? 'Fast' : 'Average');
+  }
+
+  statsCard.style.display = 'flex';
+  document.getElementById('startBtn').textContent = 'Play Again';
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TARGET SPAWNING & HIT HANDLING
+───────────────────────────────────────────────────────────── */
+function spawnYellowTarget() {
+  const geo = new THREE.SphereGeometry(state.targetRadius, 32, 32);
+  const mesh = new THREE.Mesh(geo, targetMaterial.clone());
+  mesh.castShadow = true;
+
+  const targetY = getTargetYHeight(); // Locked strictly to Head Level (1.65m) or Crouch Level (1.0m)
+
+  mesh.position.set(
+    (Math.random() - 0.5) * 26,
+    targetY,
+    -(Math.random() * 8 + 16)
+  );
+
+  scene.add(mesh);
+  targets.push({ mesh, type: 'flick' });
+  targetMeshes.push(mesh);
+}
+
+function spawnTrackingTarget() {
+  const geo = new THREE.SphereGeometry(state.targetRadius * 1.2, 32, 32);
+  const mesh = new THREE.Mesh(geo, targetMaterial.clone());
+  const initialY = getTargetYHeight();
+  mesh.position.set(0, initialY, -18);
+  scene.add(mesh);
+  targets.push({ mesh, type: 'tracking', baseY: initialY });
+  targetMeshes.push(mesh);
+}
+
+function clearTargets() {
+  targets.forEach(t => {
+    scene.remove(t.mesh);
+    if (t.mesh.geometry) t.mesh.geometry.dispose();
+  });
+  targets = [];
+  targetMeshes = [];
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SHOOTING / CLICK INTERACTION
+───────────────────────────────────────────────────────────── */
+function onPlayerClick(e) {
+  if (e.button !== 0 || !controls.isLocked || !state.gameRunning) return;
+
+  if (state.mode === 'flick') {
+    state.totalShots++;
+    raycaster.setFromCamera(CENTER, camera);
+    const intersects = raycaster.intersectObjects(targetMeshes);
+
+    if (intersects.length > 0) {
+      const hitMesh = intersects[0].object;
+      createSparks(intersects[0].point);
+      sounds.playHit();
+      triggerHitmarker();
+
+      scene.remove(hitMesh);
+      targets = targets.filter(t => t.mesh !== hitMesh);
+      targetMeshes = targetMeshes.filter(m => m !== hitMesh);
+
+      state.score += 100;
+      state.hits++;
+      
+      document.getElementById('hudStatPrimary').textContent = state.score;
+      const acc = Math.round((state.hits / state.totalShots) * 100);
+      document.getElementById('hudStatSecondary').textContent = `${acc}%`;
+
+      spawnYellowTarget();
+    } else {
+      sounds.playMiss();
+      const acc = Math.round((state.hits / state.totalShots) * 100);
+      document.getElementById('hudStatSecondary').textContent = `${acc}%`;
+    }
+  } else if (state.mode === 'reaction') {
+    handleReactionClick();
+  }
+}
+
+function triggerHitmarker() {
+  const hm = document.getElementById('hitmarker');
+  hm.style.display = 'block';
+  hm.style.opacity = '1';
+  setTimeout(() => { hm.style.opacity = '0'; }, 80);
+  setTimeout(() => { hm.style.display = 'none'; }, 140);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   REACTION TIME MODE LOGIC
+───────────────────────────────────────────────────────────── */
+function startReactionTrial() {
+  clearTargets();
+  const prompt = document.getElementById('reactionPrompt');
+  const mainText = document.getElementById('promptMain');
+  const subText = document.getElementById('promptSub');
+
+  prompt.style.display = 'block';
+  mainText.textContent = 'WAIT FOR YELLOW...';
+  mainText.style.color = '#facc15';
+  subText.textContent = `Trial ${state.reactionTrials.length + 1} of 5`;
+
+  const geo = new THREE.SphereGeometry(state.targetRadius * 1.5, 32, 32);
+  const mesh = new THREE.Mesh(geo, darkReactionMaterial);
+  const reactionY = getTargetYHeight(); // Spawn at Head or Crouch Level
+  mesh.position.set(0, reactionY, -18);
+  scene.add(mesh);
+  targets.push({ mesh, type: 'reaction' });
+  targetMeshes.push(mesh);
+
+  state.reactionState = 'waiting';
+
+  const delay = Math.random() * 2500 + 1500;
+  state.reactionTimerTimeout = setTimeout(() => {
+    if (!state.gameRunning || state.reactionState !== 'waiting') return;
+    
+    mesh.material = targetMaterial;
+    sounds.playReactionCue();
+    state.reactionState = 'ready';
+    state.reactionStartTime = performance.now();
+
+    mainText.textContent = 'CLICK NOW!';
+    mainText.style.color = '#00ff66';
+  }, delay);
+}
+
+function handleReactionClick() {
+  const mainText = document.getElementById('promptMain');
+  const subText = document.getElementById('promptSub');
+
+  if (state.reactionState === 'waiting') {
+    clearTimeout(state.reactionTimerTimeout);
+    sounds.playMiss();
+    state.reactionState = 'result';
+    mainText.textContent = 'TOO EARLY!';
+    mainText.style.color = '#ef4444';
+    subText.textContent = 'Click to retry trial';
+
+    setTimeout(() => {
+      if (controls.isLocked) startReactionTrial();
+    }, 1200);
+  } else if (state.reactionState === 'ready') {
+    const latency = Math.round(performance.now() - state.reactionStartTime);
+    sounds.playHit();
+    triggerHitmarker();
+    state.reactionTrials.push(latency);
+
+    state.reactionState = 'result';
+    mainText.textContent = `${latency} ms`;
+    mainText.style.color = '#facc15';
+
+    if (state.reactionTrials.length < 5) {
+      subText.textContent = 'Preparing next trial...';
+      setTimeout(() => {
+        if (controls.isLocked) startReactionTrial();
+      }, 1400);
+    } else {
+      subText.textContent = 'All 5 trials finished!';
+      setTimeout(() => {
+        endGameSession();
+      }, 1500);
+    }
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PARTICLE HIT EFFECTS
+───────────────────────────────────────────────────────────── */
+function createSparks(position) {
+  const pCount = 12;
+  const geo = new THREE.SphereGeometry(0.04, 8, 8);
+  const mat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+
+  for (let i = 0; i < pCount; i++) {
+    const p = new THREE.Mesh(geo, mat);
+    p.position.copy(position);
+    const vel = new THREE.Vector3(
+      (Math.random() - 0.5) * 8,
+      (Math.random() - 0.5) * 8,
+      (Math.random() - 0.5) * 8
+    );
+    scene.add(p);
+    particles.push({ mesh: p, vel, life: 0.3 });
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   MAIN ANIMATION & UPDATE LOOP
+───────────────────────────────────────────────────────────── */
+function animate() {
+  requestAnimationFrame(animate);
+  const delta = Math.min(clock.getDelta(), 0.05);
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.life -= delta;
+    p.mesh.position.addScaledVector(p.vel, delta);
+    p.mesh.scale.multiplyScalar(0.92);
+    if (p.life <= 0) {
+      scene.remove(p.mesh);
+      particles.splice(i, 1);
+    }
+  }
+
+  // Tracking Mode 3D movement at Head Level / Crouch Level
+  if (state.gameRunning && state.mode === 'tracking' && targets.length > 0) {
+    const tObj = targets[0];
+    state.trackingPathAngle += delta * state.trackingSpeedMult;
+
+    const x = Math.sin(state.trackingPathAngle) * 12;
+    // Oscillate between Head Level (1.65m) and Crouch Level (1.0m) smoothly
+    const yOffset = Math.sin(state.trackingPathAngle * 1.5) > 0 ? state.HEAD_HEIGHT : state.CROUCH_HEIGHT;
+    const y = yOffset + Math.sin(state.trackingPathAngle * 3) * 0.15;
+    const z = -18 + Math.cos(state.trackingPathAngle * 0.7) * 3;
+
+    tObj.mesh.position.set(x, y, z);
+
+    state.trackingTotalTime += delta;
+
+    raycaster.setFromCamera(CENTER, camera);
+    const intersects = raycaster.intersectObjects(targetMeshes);
+
+    if (intersects.length > 0) {
+      state.trackingTimeOnTarget += delta;
+      state.isCurrentlyTracking = true;
+      tObj.mesh.material = trackingTrackedMaterial;
+    } else {
+      state.isCurrentlyTracking = false;
+      tObj.mesh.material = targetMaterial;
+    }
+
+    document.getElementById('hudStatPrimary').textContent = `${state.trackingTimeOnTarget.toFixed(1)}s`;
+    const trackPct = Math.round((state.trackingTimeOnTarget / state.trackingTotalTime) * 100);
+    document.getElementById('hudStatSecondary').textContent = `${trackPct}%`;
+  }
+
+  renderer.render(scene, camera);
+}
+
+window.addEventListener('load', initEngine);
+</script>
+</body>
+</html>

@@ -109,21 +109,24 @@
     transform: scale(1.3);
   }
 
-  /* Controls Footer */
+  /* Controls Footer & Config Button */
   .controls-panel {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     width: 100%;
-    max-width: 900px;
+    max-width: 950px;
     margin: 0 auto;
-    background: rgba(10, 10, 20, 0.7);
+    background: rgba(10, 10, 20, 0.75);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     padding: 10px 20px;
     color: #aaa;
     font-size: 0.85rem;
+    pointer-events: auto;
   }
+
   .key-badge {
     display: inline-block;
     background: rgba(255,255,255,0.15);
@@ -133,6 +136,22 @@
     font-weight: bold;
     border: 1px solid rgba(255,255,255,0.3);
     margin: 0 2px;
+  }
+
+  .btn-config {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffd700;
+    border: 1px solid #ffd700;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn-config:hover {
+    background: rgba(255, 215, 0, 0.2);
+    transform: scale(1.05);
   }
 
   /* KO Screen Overlay */
@@ -183,16 +202,119 @@
     cursor: pointer;
     box-shadow: 0 0 20px rgba(0, 210, 255, 0.6);
     transition: transform 0.2s, box-shadow 0.2s;
-    pointer-events: auto;
   }
   .restart-btn:hover {
     transform: scale(1.08);
     box-shadow: 0 0 30px rgba(0, 210, 255, 0.9);
   }
 
+  /* Control Config Modal */
+  #config-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 150;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  #config-modal.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal-box {
+    background: #121220;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 30px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
+    color: #fff;
+  }
+  .modal-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #ffd700;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .config-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 25px;
+  }
+  .config-column h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 6px;
+  }
+  .p1-col h3 { color: #00d2ff; }
+  .p2-col h3 { color: #ff3366; }
+  
+  .remap-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+  }
+  .remap-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    min-width: 80px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .remap-btn.listening {
+    background: #ffaa00;
+    color: #000;
+    border-color: #ffea00;
+    animation: pulse 0.6s infinite alternate;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: space-between;
+  }
+  .btn-secondary {
+    background: rgba(255,255,255,0.1);
+    color: #ccc;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: #00d2ff;
+    color: #000;
+    font-weight: bold;
+    border: none;
+    padding: 8px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
   @keyframes pulse {
     from { transform: scale(1); }
-    to { transform: scale(1.08); }
+    to { transform: scale(1.05); }
   }
 </style>
 </head>
@@ -215,8 +337,9 @@
   <div id="combo-p2" class="combo-text" style="top: 25%; right: 20%;">HIT!</div>
 
   <div class="controls-panel">
-    <div><strong>P1:</strong> <span class="key-badge">A</span><span class="key-badge">D</span> Move | <span class="key-badge">W</span> Jump | <span class="key-badge">S</span> Punch</div>
-    <div><strong>P2:</strong> <span class="key-badge">←</span><span class="key-badge">→</span> Move | <span class="key-badge">↓</span> Jump | <span class="key-badge">↑</span> Punch</div>
+    <div id="p1-legend"><strong>P1:</strong> <span class="key-badge" id="lbl-p1-left">A</span><span class="key-badge" id="lbl-p1-right">D</span> Move | <span class="key-badge" id="lbl-p1-jump">W</span> Jump | <span class="key-badge" id="lbl-p1-punch">S</span> Punch</div>
+    <button class="btn-config" id="open-config-btn">⚙️ Config Controls</button>
+    <div id="p2-legend"><strong>P2:</strong> <span class="key-badge" id="lbl-p2-left">←</span><span class="key-badge" id="lbl-p2-right">→</span> Move | <span class="key-badge" id="lbl-p2-jump">↓</span> Jump | <span class="key-badge" id="lbl-p2-punch">↑</span> Punch</div>
   </div>
 </div>
 
@@ -226,8 +349,128 @@
   <button class="restart-btn" id="restart-btn">REMATCH</button>
 </div>
 
+<!-- Config Control Modal -->
+<div id="config-modal">
+  <div class="modal-box">
+    <div class="modal-title">⚙️ Control Configuration</div>
+    
+    <div class="config-grid">
+      <div class="config-column p1-col">
+        <h3>Player 1</h3>
+        <div class="remap-row"><span>Move Left:</span><button class="remap-btn" data-player="p1" data-action="left" id="btn-remap-p1-left">A</button></div>
+        <div class="remap-row"><span>Move Right:</span><button class="remap-btn" data-player="p1" data-action="right" id="btn-remap-p1-right">D</button></div>
+        <div class="remap-row"><span>Jump:</span><button class="remap-btn" data-player="p1" data-action="jump" id="btn-remap-p1-jump">W</button></div>
+        <div class="remap-row"><span>Punch:</span><button class="remap-btn" data-player="p1" data-action="punch" id="btn-remap-p1-punch">S</button></div>
+      </div>
+      
+      <div class="config-column p2-col">
+        <h3>Player 2</h3>
+        <div class="remap-row"><span>Move Left:</span><button class="remap-btn" data-player="p2" data-action="left" id="btn-remap-p2-left">←</button></div>
+        <div class="remap-row"><span>Move Right:</span><button class="remap-btn" data-player="p2" data-action="right" id="btn-remap-p2-right">→</button></div>
+        <div class="remap-row"><span>Jump:</span><button class="remap-btn" data-player="p2" data-action="jump" id="btn-remap-p2-jump">↓</button></div>
+        <div class="remap-row"><span>Punch:</span><button class="remap-btn" data-player="p2" data-action="punch" id="btn-remap-p2-punch">↑</button></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" id="reset-config-btn">Reset Defaults</button>
+      <button class="btn-primary" id="close-config-btn">Save & Close</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import * as THREE from 'https://unpkg.com/three@0.165.0/build/three.module.js';
+
+// ----- CONFIG CONTROL OBJECT -----
+const DEFAULT_CONFIG = {
+  p1: { left: 'KeyA', right: 'KeyD', jump: 'KeyW', punch: 'KeyS' },
+  p2: { left: 'ArrowLeft', right: 'ArrowRight', jump: 'ArrowDown', punch: 'ArrowUp' }
+};
+
+const CONFIG = {
+  controls: JSON.parse(JSON.stringify(DEFAULT_CONFIG)),
+  physics: { speed: 0.12, jumpVel: 0.28, gravity: 0.015, punchDamage: 10 }
+};
+
+// Helper for display labels
+function getReadableKeyName(code) {
+  if (code.startsWith('Key')) return code.slice(3);
+  if (code === 'ArrowLeft') return '←';
+  if (code === 'ArrowRight') return '→';
+  if (code === 'ArrowDown') return '↓';
+  if (code === 'ArrowUp') return '↑';
+  if (code === 'Space') return 'Space';
+  return code;
+}
+
+function updateControlUI() {
+  // Update HUD Legends
+  document.getElementById('lbl-p1-left').textContent = getReadableKeyName(CONFIG.controls.p1.left);
+  document.getElementById('lbl-p1-right').textContent = getReadableKeyName(CONFIG.controls.p1.right);
+  document.getElementById('lbl-p1-jump').textContent = getReadableKeyName(CONFIG.controls.p1.jump);
+  document.getElementById('lbl-p1-punch').textContent = getReadableKeyName(CONFIG.controls.p1.punch);
+
+  document.getElementById('lbl-p2-left').textContent = getReadableKeyName(CONFIG.controls.p2.left);
+  document.getElementById('lbl-p2-right').textContent = getReadableKeyName(CONFIG.controls.p2.right);
+  document.getElementById('lbl-p2-jump').textContent = getReadableKeyName(CONFIG.controls.p2.jump);
+  document.getElementById('lbl-p2-punch').textContent = getReadableKeyName(CONFIG.controls.p2.punch);
+
+  // Update Config Modal Buttons
+  document.getElementById('btn-remap-p1-left').textContent = getReadableKeyName(CONFIG.controls.p1.left);
+  document.getElementById('btn-remap-p1-right').textContent = getReadableKeyName(CONFIG.controls.p1.right);
+  document.getElementById('btn-remap-p1-jump').textContent = getReadableKeyName(CONFIG.controls.p1.jump);
+  document.getElementById('btn-remap-p1-punch').textContent = getReadableKeyName(CONFIG.controls.p1.punch);
+
+  document.getElementById('btn-remap-p2-left').textContent = getReadableKeyName(CONFIG.controls.p2.left);
+  document.getElementById('btn-remap-p2-right').textContent = getReadableKeyName(CONFIG.controls.p2.right);
+  document.getElementById('btn-remap-p2-jump').textContent = getReadableKeyName(CONFIG.controls.p2.jump);
+  document.getElementById('btn-remap-p2-punch').textContent = getReadableKeyName(CONFIG.controls.p2.punch);
+}
+updateControlUI();
+
+// Config Remap Modal Controller
+let activeRemap = null; // { player, action, btnEl }
+
+document.querySelectorAll('.remap-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    if (activeRemap) activeRemap.btnEl.classList.remove('listening');
+    
+    const player = btn.getAttribute('data-player');
+    const action = btn.getAttribute('data-action');
+    
+    activeRemap = { player, action, btnEl: btn };
+    btn.classList.add('listening');
+    btn.textContent = 'Press Key...';
+  });
+});
+
+window.addEventListener('keydown', (e) => {
+  if (activeRemap) {
+    e.preventDefault();
+    e.stopPropagation();
+    const newCode = e.code;
+    CONFIG.controls[activeRemap.player][activeRemap.action] = newCode;
+    activeRemap.btnEl.classList.remove('listening');
+    activeRemap = null;
+    updateControlUI();
+  }
+}, true);
+
+document.getElementById('open-config-btn').addEventListener('click', () => {
+  document.getElementById('config-modal').classList.add('show');
+});
+document.getElementById('close-config-btn').addEventListener('click', () => {
+  document.getElementById('config-modal').classList.remove('show');
+  if (activeRemap) {
+    activeRemap.btnEl.classList.remove('listening');
+    activeRemap = null;
+  }
+});
+document.getElementById('reset-config-btn').addEventListener('click', () => {
+  CONFIG.controls = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+  updateControlUI();
+});
 
 // ----- Audio Synthesizer (Web Audio API) -----
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -454,7 +697,7 @@ function createFighter(mainColor, xPos, facingDir) {
 const fighter1 = createFighter(0x00d2ff, -3, 1);
 const fighter2 = createFighter(0xff0055, 3, -1);
 
-// ----- Game State -----
+// ----- Game State & Input Listening -----
 const state = {
   p1: {
     fighter: fighter1,
@@ -463,8 +706,7 @@ const state = {
     hp: 100,
     dir: 1,
     punchTimer: 0,
-    hitTimer: 0,
-    baseX: -3
+    hitTimer: 0
   },
   p2: {
     fighter: fighter2,
@@ -473,36 +715,34 @@ const state = {
     hp: 100,
     dir: -1,
     punchTimer: 0,
-    hitTimer: 0,
-    baseX: 3
+    hitTimer: 0
   },
   keys: {},
   gameOver: false
 };
 
-// ----- Keyboard Event Listeners -----
 window.addEventListener('keydown', e => {
-  state.keys[e.code] = true;
+  if (!activeRemap) state.keys[e.code] = true;
 });
 window.addEventListener('keyup', e => {
-  state.keys[e.code] = false;
+  if (!activeRemap) state.keys[e.code] = false;
 });
 
 // ----- Movement & Combat Logic -----
-function updateFighter(p, leftKey, rightKey, jumpKey, punchKey) {
-  if (state.gameOver) return;
+function updateFighter(p, playerKey) {
+  if (state.gameOver || activeRemap) return;
 
-  const speed = 0.12;
-  const jumpVel = 0.28;
+  const ctrl = CONFIG.controls[playerKey];
+  const { speed, jumpVel, gravity } = CONFIG.physics;
 
   // Horizontal Movement
   let isMoving = false;
-  if (state.keys[leftKey]) {
+  if (state.keys[ctrl.left]) {
     p.mesh.position.x -= speed;
     p.dir = -1;
     isMoving = true;
   }
-  if (state.keys[rightKey]) {
+  if (state.keys[ctrl.right]) {
     p.mesh.position.x += speed;
     p.dir = 1;
     isMoving = true;
@@ -515,13 +755,13 @@ function updateFighter(p, leftKey, rightKey, jumpKey, punchKey) {
   p.mesh.position.x = Math.max(-10, Math.min(10, p.mesh.position.x));
 
   // Jump Logic
-  if (state.keys[jumpKey] && p.mesh.position.y <= 0.01) {
+  if (state.keys[ctrl.jump] && p.mesh.position.y <= 0.01) {
     p.vel.y = jumpVel;
     playSynthSound('jump');
   }
 
   // Gravity
-  p.vel.y -= 0.015;
+  p.vel.y -= gravity;
   p.mesh.position.y += p.vel.y;
   if (p.mesh.position.y < 0) {
     p.mesh.position.y = 0;
@@ -529,17 +769,16 @@ function updateFighter(p, leftKey, rightKey, jumpKey, punchKey) {
   }
 
   // Punch Logic
-  if (state.keys[punchKey] && p.punchTimer <= 0) {
+  if (state.keys[ctrl.punch] && p.punchTimer <= 0) {
     p.punchTimer = 15; // Punch animation frames
     playSynthSound('punch');
     tryPunch(p);
-    state.keys[punchKey] = false; // Debounce key
+    state.keys[ctrl.punch] = false; // Debounce key
   }
 
   // Punch Animation Lerp
   if (p.punchTimer > 0) {
     p.punchTimer--;
-    // Extend right arm forward
     p.fighter.rArm.position.z = 0.6;
     p.fighter.rArm.position.y = 1.4;
     p.fighter.rArm.rotation.x = -Math.PI / 2;
@@ -559,7 +798,7 @@ function updateFighter(p, leftKey, rightKey, jumpKey, punchKey) {
     p.mesh.rotation.z = 0;
   }
 
-  // Simple leg stance stride animation
+  // Stride animation
   if (isMoving && p.mesh.position.y <= 0.01) {
     const time = Date.now() * 0.015;
     p.fighter.rLeg.rotation.x = Math.sin(time) * 0.5;
@@ -576,7 +815,7 @@ function tryPunch(attacker) {
   const facing = (defender.mesh.position.x - attacker.mesh.position.x) * attacker.dir > 0;
 
   if (distance < 2.2 && facing) {
-    defender.hp = Math.max(0, defender.hp - 10);
+    defender.hp = Math.max(0, defender.hp - CONFIG.physics.punchDamage);
     defender.hitTimer = 10;
     
     // Knockback
@@ -637,11 +876,9 @@ document.getElementById('restart-btn').addEventListener('click', restartGame);
 function animate() {
   requestAnimationFrame(animate);
 
-  // Player 1 Movement (A/D/W/S)
-  updateFighter(state.p1, 'KeyA', 'KeyD', 'KeyW', 'KeyS');
-
-  // Player 2 Movement (Arrow Keys: Left/Right/Down=Jump/Up=Punch)
-  updateFighter(state.p2, 'ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp');
+  // Player Updates
+  updateFighter(state.p1, 'p1');
+  updateFighter(state.p2, 'p2');
 
   // Update Sparks
   const positions = sparkParticles.geometry.attributes.position.array;
@@ -653,7 +890,7 @@ function animate() {
   }
   sparkParticles.geometry.attributes.position.needsUpdate = true;
 
-  // Dynamic Camera Tracking (Midpoint between fighters)
+  // Dynamic Camera Tracking
   const midX = (state.p1.mesh.position.x + state.p2.mesh.position.x) / 2;
   const dist = Math.abs(state.p1.mesh.position.x - state.p2.mesh.position.x);
   
