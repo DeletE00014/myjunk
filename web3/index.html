@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Bloom Flower Shop - Where Every Flower Blooms with Love</title>
+  <meta name="description" content="Welcome to Pixel Bloom Flower Shop! Handcrafted pixel-perfect bouquets, potted plants, and sakura collections delivered with love.">
+  
+  <!-- Google Fonts: Silkscreen, Press Start 2P & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Canvas for Floating Sakura Petals -->
+  <canvas id="sakura-canvas"></canvas>
+
+  <!-- Top Announcement Bar -->
+  <div class="top-announcement">
+    <div class="container announcement-content">
+      <span class="announcement-text">🌸 Free delivery for orders over $50!</span>
+      <div class="top-utility-links">
+        <button id="search-trigger" class="top-link"><span class="icon">🔍</span> Search</button>
+        <button id="wishlist-trigger" class="top-link"><span class="icon">💖</span> Wishlist (<span id="wishlist-count">2</span>)</button>
+        <button id="cart-modal-trigger" class="top-link highlight"><span class="icon">🛒</span> Cart (<span id="top-cart-count">3</span>)</button>
+        <button id="login-trigger" class="top-link"><span class="icon">👤</span> Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header / Navigation -->
+  <header class="main-header">
+    <div class="container header-content">
+      <a href="#" class="logo">
+        <span class="logo-icon">🌸</span>
+        <div class="logo-text">
+          <span class="brand-title">Pixel Bloom</span>
+          <span class="brand-subtitle">Flower Shop</span>
+        </div>
+      </a>
+
+      <nav class="nav-menu">
+        <a href="#hero" class="nav-link active">Home</a>
+        <div class="dropdown">
+          <a href="#shop-section" class="nav-link dropdown-toggle">Shop ▾</a>
+          <div class="dropdown-menu">
+            <a href="#shop-section" data-filter="all">All Flowers</a>
+            <a href="#shop-section" data-filter="Bouquets">Bouquets</a>
+            <a href="#shop-section" data-filter="Potted Plants">Potted Plants</a>
+            <a href="#shop-section" data-filter="Occasions">Occasions</a>
+            <a href="#shop-section" data-filter="Gifts">Gifts</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          <a href="#featured-section" class="nav-link dropdown-toggle">Categories ▾</a>
+          <div class="dropdown-menu">
+            <a href="#shop-section" data-filter="Bouquets">🌸 Fresh Bouquets</a>
+            <a href="#shop-section" data-filter="Potted Plants">🪴 House Plants</a>
+            <a href="#shop-section" data-filter="Gifts">🎁 Gift Baskets</a>
+          </div>
+        </div>
+        <a href="#about-section" class="nav-link">About</a>
+        <a href="#contact-section" class="nav-link">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="pixel-btn primary-btn sm" id="quick-shop-btn">Shop Now 🛍️</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content container">
+
+    <!-- Top Split Section: Hero Banner (Left) & Featured Items (Right) -->
+    <div class="hero-featured-grid">
+      
+      <!-- Left Hero Banner -->
+      <section id="hero" class="hero-card pixel-box">
+        <div class="hero-image-wrapper">
+          <img src="assets/pixel_bloom_hero.jpg" alt="Pixel Bloom Flower Shop Storefront" class="hero-img">
+          <div class="hero-overlay-content">
+            <h1 class="hero-title">Welcome to<br><span class="pixel-glow">* Pixel Bloom *</span></h1>
+            <p class="hero-tagline">Where every flower blooms with love. 💕</p>
+            <div class="hero-cta-buttons">
+              <a href="#shop-section" class="pixel-btn pink-btn lg">Shop Now ❯</a>
+              <a href="#featured-section" class="pixel-btn cream-btn lg">Browse Flowers 🌸</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Badges Bar -->
+        <div class="hero-badges-bar">
+          <div class="badge-item">
+            <span class="badge-icon">🚚</span>
+            <div class="badge-info">
+              <strong>Free Delivery</strong>
+              <span>On orders over $50</span>
+            </div>
+          </div>
+          <div class="badge-item">
+            <span class="badge-icon">🌸</span>
+            <div class="badge-info">
+              <strong>Fresh Flowers</strong>
+              <span>Handpicked daily</span>
+            </div>
+          </div>
+          <div class="badge-item">
+            <span class="badge-icon">🪴</span>
+            <div class="badge-info">
+              <strong>Eco Friendly</strong>
+              <span>Sustainable & local</span>
+            </div>
+          </div>
+          <div class="badge-item">
+            <span class="badge-icon">🎁</span>
+            <div class="badge-info">
+              <strong>Gift Wrapping</strong>
+              <span>Make it special</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Featured Products + Sakura Season Banner + Category Cards -->
+      <div class="featured-column-right">
+        
+        <!-- Featured Flowers Card -->
+        <section id="featured-section" class="featured-card pixel-box">
+          <div class="section-header-bar">
+            <h2>🌸 Featured Flowers 🌸</h2>
+            <button class="pixel-btn sm outline-btn" id="view-all-btn">View All</button>
+          </div>
+          <div class="featured-products-grid">
+            
+            <div class="mini-product-card" data-id="sakura-bouquet">
+              <div class="mini-thumb">
+                <img src="assets/sakura_bouquet.jpg" alt="Sakura Bouquet">
+              </div>
+              <div class="mini-details">
+                <h3>Sakura Bouquet</h3>
+                <div class="price-action">
+                  <span class="price">$24.99</span>
+                  <button class="add-cart-mini-btn" data-id="sakura-bouquet" title="Add to Cart">🛒</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mini-product-card" data-id="pink-tulips">
+              <div class="mini-thumb">
+                <img src="assets/pink_tulips.jpg" alt="Pink Tulips">
+              </div>
+              <div class="mini-details">
+                <h3>Pink Tulips</h3>
+                <div class="price-action">
+                  <span class="price">$19.99</span>
+                  <button class="add-cart-mini-btn" data-id="pink-tulips" title="Add to Cart">🛒</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mini-product-card" data-id="lavender-pot">
+              <div class="mini-thumb">
+                <img src="assets/lavender_pot.jpg" alt="Lavender Pot">
+              </div>
+              <div class="mini-details">
+                <h3>Lavender Pot</h3>
+                <div class="price-action">
+                  <span class="price">$18.99</span>
+                  <button class="add-cart-mini-btn" data-id="lavender-pot" title="Add to Cart">🛒</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mini-product-card" data-id="sunflower-basket">
+              <div class="mini-thumb">
+                <img src="assets/sunflower_basket.jpg" alt="Sunflower Basket">
+              </div>
+              <div class="mini-details">
+                <h3>Sunflower Basket</h3>
+                <div class="price-action">
+                  <span class="price">$22.99</span>
+                  <button class="add-cart-mini-btn" data-id="sunflower-basket" title="Add to Cart">🛒</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Sakura Season Special Collection Banner -->
+        <section class="sakura-season-card pixel-box">
+          <img src="assets/sakura_season_banner.jpg" alt="Sakura Season Banner" class="banner-bg-img">
+          <div class="sakura-banner-overlay">
+            <h2>Sakura Season</h2>
+            <p>Special Collection</p>
+            <a href="#shop-section" class="pixel-btn pink-btn sm">Explore Now ❯</a>
+          </div>
+        </section>
+
+        <!-- Category Quick Quick-Links -->
+        <div class="categories-bar-grid">
+          <button class="category-pill-btn active" data-category="Bouquets">
+            <span class="pill-icon">💐</span> Bouquets
+          </button>
+          <button class="category-pill-btn" data-category="Potted Plants">
+            <span class="pill-icon">🪴</span> Potted Plants
+          </button>
+          <button class="category-pill-btn" data-category="Occasions">
+            <span class="pill-icon">🌺</span> Occasions
+          </button>
+          <button class="category-pill-btn" data-category="Gifts">
+            <span class="pill-icon">🎁</span> Gifts
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom Multi-Panel Grid: Shop (Left Filter + Grid), Product Detail, Shopping Cart, About Us, Contact Us -->
+    <div class="interactive-panels-grid">
+      
+      <!-- Panel 1: Shop (Catalog & Filters) -->
+      <section id="shop-section" class="panel-box pixel-box shop-panel">
+        <div class="panel-header-tab">
+          <span>Shop</span>
+        </div>
+
+        <div class="shop-content-layout">
+          <!-- Sidebar Filters -->
+          <aside class="shop-filter-sidebar">
+            <div class="filter-group">
+              <h4 class="filter-title">Categories</h4>
+              <ul class="filter-list">
+                <li><label class="radio-label"><input type="radio" name="cat-filter" value="all" checked> <span>All Flowers</span></label></li>
+                <li><label class="radio-label"><input type="radio" name="cat-filter" value="Bouquets"> <span>Bouquets</span></label></li>
+                <li><label class="radio-label"><input type="radio" name="cat-filter" value="Potted Plants"> <span>Potted Plants</span></label></li>
+                <li><label class="radio-label"><input type="radio" name="cat-filter" value="Occasions"> <span>Occasions</span></label></li>
+                <li><label class="radio-label"><input type="radio" name="cat-filter" value="Gifts"> <span>Gifts</span></label></li>
+              </ul>
+            </div>
+
+            <div class="filter-group">
+              <h4 class="filter-title">Price Range</h4>
+              <ul class="filter-list">
+                <li><label class="radio-label"><input type="radio" name="price-filter" value="all" checked> <span>All Prices</span></label></li>
+                <li><label class="radio-label"><input type="radio" name="price-filter" value="0-20"> <span>$0 - $20</span></label></li>
+                <li><label class="radio-label"><input type="radio" name="price-filter" value="20-40"> <span>$20 - $40</span></label></li>
+                <li><label class="radio-label"><input type="radio" name="price-filter" value="40-60"> <span>$40 - $60</span></label></li>
+                <li><label class="radio-label"><input type="radio" name="price-filter" value="60+"> <span>$60+</span></label></li>
+              </ul>
+            </div>
+
+            <div class="filter-group">
+              <h4 class="filter-title">Color Palette</h4>
+              <div class="color-swatches">
+                <button class="color-swatch-btn active" data-color="all" style="background: conic-gradient(red, yellow, green, blue, purple, red);" title="All Colors"></button>
+                <button class="color-swatch-btn" data-color="pink" style="background: #EE7B8D;" title="Pink"></button>
+                <button class="color-swatch-btn" data-color="red" style="background: #E63946;" title="Red"></button>
+                <button class="color-swatch-btn" data-color="blue" style="background: #457B9D;" title="Blue"></button>
+                <button class="color-swatch-btn" data-color="yellow" style="background: #E9C46A;" title="Yellow"></button>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Shop Main Area -->
+          <div class="shop-main-view">
+            <div class="shop-toolbar">
+              <span class="showing-count" id="product-count-display">Showing 6 products</span>
+              <div class="sort-by">
+                <label for="sort-select">Sort by:</label>
+                <select id="sort-select" class="pixel-select">
+                  <option value="popular">Popular</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="rating">Highest Rated</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="catalog-grid" id="catalog-container">
+              <!-- Dynamically populated via script.js -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 2: Product Detail Dynamic View -->
+      <section id="product-detail-section" class="panel-box pixel-box product-detail-panel">
+        <div class="panel-header-tab">
+          <span>Product Detail</span>
+        </div>
+
+        <div class="product-detail-container" id="detail-dynamic-wrapper">
+          <!-- Dynamically populated via script.js -->
+        </div>
+      </section>
+
+      <!-- Panel 3: Shopping Cart Interactive Manager -->
+      <section id="cart-section" class="panel-box pixel-box shopping-cart-panel">
+        <div class="panel-header-tab">
+          <span>Shopping Cart</span>
+        </div>
+
+        <div class="cart-content-wrapper">
+          <div class="cart-items-table-header">
+            <span>Item</span>
+            <span>Price</span>
+            <span>Qty</span>
+            <span>Total</span>
+            <span></span>
+          </div>
+
+          <div class="cart-items-list" id="cart-items-container">
+            <!-- Dynamically populated via script.js -->
+          </div>
+
+          <div class="cart-summary-box">
+            <div class="summary-line">
+              <span>Subtotal</span>
+              <strong id="cart-subtotal">$63.97</strong>
+            </div>
+            <div class="summary-line">
+              <span>Shipping</span>
+              <strong id="cart-shipping">$5.00</strong>
+            </div>
+            <div class="summary-line total">
+              <span>Total</span>
+              <strong id="cart-grand-total">$68.97</strong>
+            </div>
+
+            <div class="cart-actions">
+              <button class="pixel-btn cream-btn sm" id="continue-shopping-btn">❮ Continue Shopping</button>
+              <button class="pixel-btn pink-btn lg" id="proceed-checkout-btn">Proceed to Checkout 🌸</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 4: About Us -->
+      <section id="about-section" class="panel-box pixel-box about-panel">
+        <div class="panel-header-tab">
+          <span>About Us</span>
+        </div>
+
+        <div class="about-content">
+          <div class="story-text">
+            <h3>Our Story</h3>
+            <p>Pixel Bloom began as a small flower shop with a big dream – to spread joy through flowers. We believe in freshness, sustainability, and sweetness in every petal.</p>
+          </div>
+
+          <div class="about-illustration-box">
+            <img src="assets/pixel_bloom_hero.jpg" alt="Pixel Bloom Owner & Shop" class="about-img">
+          </div>
+
+          <div class="about-perks-row">
+            <div class="perk-card">
+              <span class="perk-icon">🌸</span>
+              <strong>Locally Sourced</strong>
+            </div>
+            <div class="perk-card">
+              <span class="perk-icon">🪴</span>
+              <strong>Handcrafted with Care</strong>
+            </div>
+            <div class="perk-card">
+              <span class="perk-icon">💖</span>
+              <strong>For Every Special Moment</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 5: Contact Us -->
+      <section id="contact-section" class="panel-box pixel-box contact-panel">
+        <div class="panel-header-tab">
+          <span>Contact Us</span>
+        </div>
+
+        <div class="contact-content-grid">
+          <div class="contact-info-column">
+            <div class="info-block">
+              <span class="info-icon">📍</span>
+              <div>
+                <strong>Visit Us</strong>
+                <p>123 Sakura Street, Dagupan City, Philippines</p>
+              </div>
+            </div>
+            
+            <div class="info-block">
+              <span class="info-icon">📞</span>
+              <div>
+                <strong>Call Us</strong>
+                <p>+63 912 345 6789</p>
+              </div>
+            </div>
+
+            <div class="info-block">
+              <span class="info-icon">✉️</span>
+              <div>
+                <strong>Email Us</strong>
+                <p>hello@pixelbloom.com</p>
+              </div>
+            </div>
+
+            <div class="info-block">
+              <span class="info-icon">⏰</span>
+              <div>
+                <strong>Opening Hours</strong>
+                <p>Mon - Sat: 8:00 AM - 7:00 PM<br>Sunday: 9:00 AM - 5:00 PM</p>
+              </div>
+            </div>
+
+            <div class="social-links-row">
+              <a href="#" class="social-btn">📘</a>
+              <a href="#" class="social-btn">📷</a>
+              <a href="#" class="social-btn">📌</a>
+            </div>
+          </div>
+
+          <div class="contact-form-column">
+            <div class="map-graphic-box">
+              <div class="map-placeholder">
+                <span class="map-pin">📍</span>
+                <span class="map-label">Pixel Bloom Shop Location</span>
+              </div>
+            </div>
+
+            <form id="contact-form" class="pixel-form">
+              <input type="text" placeholder="Your Name" required class="pixel-input">
+              <input type="email" placeholder="Your Email" required class="pixel-input">
+              <textarea placeholder="Your Message" rows="3" required class="pixel-input"></textarea>
+              <button type="submit" class="pixel-btn pink-btn full-width">Send Message 🌸</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="container footer-content">
+      <div class="footer-col brand-col">
+        <a href="#" class="footer-logo">
+          <span class="logo-icon">🌸</span>
+          <strong>Pixel Bloom Flower Shop</strong>
+        </a>
+        <p>Thank you for supporting local and choosing happiness.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#shop-section">All Flowers</a></li>
+          <li><a href="#shop-section">Bouquets</a></li>
+          <li><a href="#shop-section">Potted Plants</a></li>
+          <li><a href="#shop-section">Gifts</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer Service</h4>
+        <ul>
+          <li><a href="#faq">FAQs</a></li>
+          <li><a href="#shipping">Delivery Information</a></li>
+          <li><a href="#returns">Returns & Refunds</a></li>
+          <li><a href="#terms">Terms & Conditions</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>My Account</h4>
+        <ul>
+          <li><a href="#login">Login</a></li>
+          <li><a href="#register">Register</a></li>
+          <li><a href="#orders">My Orders</a></li>
+          <li><a href="#wishlist">Wishlist</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col newsletter-col">
+        <h4>Newsletter</h4>
+        <p>Get updates on new arrivals and special offers!</p>
+        <form id="newsletter-form" class="newsletter-form">
+          <input type="email" placeholder="Enter your email" required class="pixel-input sm">
+          <button type="submit" class="pixel-btn pink-btn icon-only">❯</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2025 Pixel Bloom Flower Shop. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Modals & Toasts -->
+  <!-- Search Modal -->
+  <div id="search-modal" class="modal-backdrop hidden">
+    <div class="modal-card pixel-box">
+      <div class="modal-header">
+        <h3>🔍 Search Pixel Bloom</h3>
+        <button class="close-modal-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="modal-search-input" class="pixel-input lg" placeholder="Search sakura, tulips, sunflowers..." autofocus>
+        <div id="search-results-list" class="search-results-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div id="checkout-modal" class="modal-backdrop hidden">
+    <div class="modal-card pixel-box lg">
+      <div class="modal-header">
+        <h3>🌸 Checkout & Delivery Order</h3>
+        <button class="close-modal-btn">✕</button>
+      </div>
+      <div class="modal-body checkout-modal-body">
+        <form id="checkout-form">
+          <div class="form-grid">
+            <div>
+              <label>Full Name</label>
+              <input type="text" class="pixel-input" required placeholder="e.g. Sakura Haruno">
+            </div>
+            <div>
+              <label>Phone Number</label>
+              <input type="tel" class="pixel-input" required placeholder="+63 900 000 0000">
+            </div>
+            <div class="full">
+              <label>Delivery Address</label>
+              <input type="text" class="pixel-input" required placeholder="Street address, city, region">
+            </div>
+            <div>
+              <label>Payment Method</label>
+              <select class="pixel-select full-width">
+                <option>💵 Cash on Delivery</option>
+                <option>💳 Credit / Debit Card</option>
+                <option>📱 GCash / E-Wallet</option>
+              </select>
+            </div>
+            <div>
+              <label>Delivery Note (Optional)</label>
+              <input type="text" class="pixel-input" placeholder="Leave a sweet card note...">
+            </div>
+          </div>
+          <div class="checkout-summary-bar">
+            <span>Total to pay: <strong id="checkout-modal-total">$68.97</strong></span>
+            <button type="submit" class="pixel-btn pink-btn lg">Place Order Now 🎉</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
