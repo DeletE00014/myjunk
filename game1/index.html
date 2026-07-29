@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LAST OUTPOST — 3D Pixel Art Idle Survival</title>
+  <meta name="description" content="Build, survive, and expand the last human settlement in 3D voxel pixel art. Defend against evolving zombie hordes!">
+  
+  <!-- Google Fonts: Press Start 2P, Silkscreen, Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Three.js 3D Engine Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Game Canvas / App Container -->
+  <div class="app-viewport-container">
+
+    <!-- Top Navigation & Resource Bar -->
+    <header class="top-header">
+      <div class="logo-wrapper">
+        <h1 class="game-logo">LAST OUTPOST</h1>
+        <span class="game-subtitle">⚡ IDLE SURVIVAL ⚡</span>
+      </div>
+
+      <!-- Resource Counters Bar -->
+      <div class="resource-bar">
+        <div class="res-item" title="Total Survivors">
+          <span class="res-icon">👥</span>
+          <span class="res-val" id="res-survivors">28</span>
+        </div>
+        <div class="res-item" title="Outpost Morale">
+          <span class="res-icon">😄</span>
+          <span class="res-val" id="res-morale">87%</span>
+        </div>
+        <div class="res-item" title="Food Supply">
+          <span class="res-icon">🍞</span>
+          <span class="res-val" id="res-food">1.2K</span>
+        </div>
+        <div class="res-item" title="Clean Water">
+          <span class="res-icon">💧</span>
+          <span class="res-val" id="res-water">850</span>
+        </div>
+        <div class="res-item" title="Wood Materials">
+          <span class="res-icon">🪵</span>
+          <span class="res-val" id="res-wood">2.1K</span>
+        </div>
+        <div class="res-item" title="Scrap Metal">
+          <span class="res-icon">🪙</span>
+          <span class="res-val" id="res-metal">1.7K</span>
+        </div>
+        <div class="res-item" title="Fuel Supply">
+          <span class="res-icon">⛽</span>
+          <span class="res-val" id="res-fuel">680</span>
+        </div>
+        <div class="res-item" title="Medicine & Funds">
+          <span class="res-icon">💵</span>
+          <span class="res-val" id="res-cash">920</span>
+        </div>
+      </div>
+
+      <!-- Time & Status Widget -->
+      <div class="status-controls">
+        <div class="time-widget">
+          <span class="day-badge" id="time-day">DAY 56</span>
+          <span class="clock-val" id="time-clock">🕒 07:30 PM</span>
+          <span class="weather-tag" id="time-weather">🌧️ WEATHER: RAIN</span>
+          <span class="threat-badge" id="time-threat">🚨 THREAT: HIGH</span>
+        </div>
+        <button class="icon-btn" id="sound-toggle-btn" title="Toggle Sound">🔊</button>
+        <button class="icon-btn" id="settings-trigger" title="Settings">⚙️</button>
+      </div>
+    </header>
+
+    <!-- Main Game Screen Content Grid -->
+    <main class="main-dashboard-grid">
+
+      <!-- Left Column: Adaptive AI System & Features -->
+      <aside class="left-column">
+        
+        <!-- Adaptive Idle System Card -->
+        <section class="panel-card">
+          <div class="panel-header">
+            <span>ADAPTIVE IDLE SYSTEM</span>
+          </div>
+          <div class="panel-body">
+            <ul class="bullet-list">
+              <li>The game adapts to your playstyle.</li>
+              <li>More of what you enjoy.</li>
+              <li>Challenges that fit you.</li>
+              <li>Rewards that match your pace.</li>
+            </ul>
+            <div class="quote-tag">Your outpost. Your story.</div>
+          </div>
+        </section>
+
+        <!-- Features List Card -->
+        <section class="panel-card">
+          <div class="panel-header">
+            <span>FEATURES</span>
+          </div>
+          <div class="panel-body compact">
+            <div class="feature-item"><span class="f-icon">🔨</span> BUILD YOUR OUTPOST</div>
+            <div class="feature-item"><span class="f-icon">👥</span> RECRUIT SURVIVORS</div>
+            <div class="feature-item"><span class="f-icon">🧪</span> CRAFT & RESEARCH</div>
+            <div class="feature-item"><span class="f-icon">🔫</span> DEFEND AGAINST ZOMBIES</div>
+            <div class="feature-item"><span class="f-icon">🗺️</span> EXPLORE THE WASTELAND</div>
+            <div class="feature-item"><span class="f-icon">📦</span> IDLE PROGRESS OFFLINE</div>
+          </div>
+        </section>
+
+      </aside>
+
+      <!-- Center Top: 3D Pixel Voxel Outpost Viewport -->
+      <section class="center-stage-viewport">
+        <div class="viewport-header-overlay">
+          <div class="outpost-badge">
+            <span class="badge-dot green"></span>
+            <span>COMMAND CENTER — LVL 6</span>
+          </div>
+
+          <div class="camera-controls-bar">
+            <button class="pixel-btn sm cream" id="rotate-cam-btn">🎥 ROTATE 3D</button>
+            <button class="pixel-btn sm cream" id="reset-cam-btn">🔍 RESET VIEW</button>
+          </div>
+        </div>
+
+        <!-- 3D Canvas Viewport -->
+        <div class="canvas-3d-wrapper" id="canvas-3d-wrapper">
+          <canvas id="outpost-canvas-3d"></canvas>
+
+          <!-- Floating 3D Building Tooltips -->
+          <div class="building-label hq" style="top: 25%; left: 48%;">COMMAND CENTER <span>LVL 6</span></div>
+          <div class="building-label tower" style="top: 15%; left: 28%;">WATCHTOWER <span>LVL 4</span></div>
+          <div class="building-label radio" style="top: 18%; left: 62%;">RADIO TOWER <span>LVL 3</span></div>
+          <div class="building-label farm" style="top: 32%; left: 24%;">FARM <span>LVL 5</span></div>
+          <div class="building-label workshop" style="top: 35%; left: 38%;">WORKSHOP <span>LVL 5</span></div>
+          <div class="building-label hospital" style="top: 36%; left: 58%;">HOSPITAL <span>LVL 4</span></div>
+          <div class="building-label water" style="top: 48%; left: 24%;">WATER PURIFIER <span>LVL 3</span></div>
+          <div class="building-label warehouse" style="top: 50%; left: 40%;">WAREHOUSE <span>LVL 5</span></div>
+          <div class="building-label generator" style="top: 50%; left: 56%;">GENERATOR <span>LVL 4</span></div>
+        </div>
+      </section>
+
+      <!-- Right Column: Zombie Threat & Evolution + Events -->
+      <aside class="right-column">
+        
+        <!-- Zombie Threat & Evolution Card -->
+        <section class="panel-card threat-panel">
+          <div class="panel-header red">
+            <span>ZOMBIE THREAT 💀</span>
+          </div>
+          <div class="panel-body">
+            <!-- Roster of Zombie Types -->
+            <div class="zombies-roster-grid">
+              <div class="zombie-card">
+                <span class="z-sprite">🧟</span>
+                <span class="z-title">WALKER</span>
+              </div>
+              <div class="zombie-card">
+                <span class="z-sprite">🏃</span>
+                <span class="z-title">RUNNER</span>
+              </div>
+              <div class="zombie-card">
+                <span class="z-sprite">🦎</span>
+                <span class="z-title">CRAWLER</span>
+              </div>
+              <div class="zombie-card">
+                <span class="z-sprite">🤢</span>
+                <span class="z-title">TOXIC</span>
+              </div>
+              <div class="zombie-card">
+                <span class="z-sprite">🦍</span>
+                <span class="z-title">BRUTE</span>
+              </div>
+              <div class="zombie-card">
+                <span class="z-sprite">👾</span>
+                <span class="z-title">MUTANT</span>
+              </div>
+            </div>
+
+            <p class="zombie-motto">They evolve. They learn. They adapt.</p>
+          </div>
+        </section>
+
+        <!-- Adaptive World Playstyle Card -->
+        <section class="panel-card">
+          <div class="panel-header">
+            <span>ADAPTIVE WORLD</span>
+          </div>
+          <div class="panel-body">
+            <div class="adaptive-pills-row">
+              <span class="pill red">💀 More raiders</span>
+              <span class="pill green">🛡️ Fewer raids</span>
+              <span class="pill yellow">📦 More resources</span>
+              <span class="pill red">🧟 Harder zombies</span>
+              <span class="pill purple">📻 Special events</span>
+            </div>
+            <div class="sub-text">Events change based on your playstyle.</div>
+          </div>
+        </section>
+
+        <!-- Events Queue Stream Card -->
+        <section class="panel-card events-panel">
+          <div class="panel-body">
+            <div class="event-stream-row positive">
+              <div class="event-title-box">
+                <span class="e-icon">🪂</span>
+                <div>
+                  <strong>SUPPLY DROP INCOMING</strong>
+                </div>
+              </div>
+              <span class="e-timer">02:45:30</span>
+            </div>
+
+            <div class="event-stream-row warning">
+              <div class="event-title-box">
+                <span class="e-icon">📻</span>
+                <div>
+                  <strong>SURVIVOR DISTRESS CALL</strong>
+                </div>
+              </div>
+              <span class="e-timer">01:15:20</span>
+            </div>
+
+            <div class="event-stream-row danger">
+              <div class="event-title-box">
+                <span class="e-icon">🚨</span>
+                <div>
+                  <strong>ZOMBIE HORDE APPROACHING</strong>
+                </div>
+              </div>
+              <span class="e-timer danger-text" id="next-horde-timer">00:10:45</span>
+            </div>
+          </div>
+        </section>
+
+      </aside>
+
+      <!-- Bottom Panel 1: Survivors Crew Roster -->
+      <section class="panel-card bottom-panel-survivors">
+        <div class="panel-header">
+          <span>SURVIVORS 28/35</span>
+        </div>
+        <div class="panel-body scrollable">
+          <div class="survivor-unit-card">
+            <div class="s-avatar">👨‍🔧</div>
+            <div class="s-details">
+              <strong>JACK</strong>
+              <span>LVL 12</span>
+              <span class="s-role">⚒️ BUILDER</span>
+            </div>
+          </div>
+
+          <div class="survivor-unit-card">
+            <div class="s-avatar">👩‍🌾</div>
+            <div class="s-details">
+              <strong>MAYA</strong>
+              <span>LVL 10</span>
+              <span class="s-role">🌾 FARMER</span>
+            </div>
+          </div>
+
+          <div class="survivor-unit-card">
+            <div class="s-avatar">👨‍🏭</div>
+            <div class="s-details">
+              <strong>DIESEL</strong>
+              <span>LVL 15</span>
+              <span class="s-role">🔧 MECHANIC</span>
+            </div>
+          </div>
+
+          <div class="survivor-unit-card">
+            <div class="s-avatar">👩‍⚕️</div>
+            <div class="s-details">
+              <strong>DOC</strong>
+              <span>LVL 11</span>
+              <span class="s-role">🩺 DOCTOR</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Panel 2: Build Grid & Categories -->
+      <section class="panel-card bottom-panel-build">
+        <div class="panel-header">
+          <span>BUILD</span>
+        </div>
+        <div class="panel-body">
+          <div class="build-cards-grid">
+            <div class="b-item-card" onclick="buildStructure('Wooden Wall')">
+              <div class="b-icon">🪵</div>
+              <div class="b-name">Wooden Wall</div>
+              <div class="b-cost">🪵 500</div>
+            </div>
+
+            <div class="b-item-card" onclick="buildStructure('Auto Turret')">
+              <div class="b-icon">🔫</div>
+              <div class="b-name">Auto Turret</div>
+              <div class="b-cost">🪙 800</div>
+            </div>
+
+            <div class="b-item-card" onclick="buildStructure('Hydro Farm')">
+              <div class="b-icon">🌾</div>
+              <div class="b-name">Farm</div>
+              <div class="b-cost">🍞 400</div>
+            </div>
+
+            <div class="b-item-card" onclick="buildStructure('Solar Panel')">
+              <div class="b-icon">☀️</div>
+              <div class="b-name">Solar Panel</div>
+              <div class="b-cost">🪙 600</div>
+            </div>
+
+            <div class="b-item-card" onclick="buildStructure('Watchtower')">
+              <div class="b-icon">🗼</div>
+              <div class="b-name">Watchtower</div>
+              <div class="b-cost">🪵 700</div>
+            </div>
+
+            <div class="b-item-card" onclick="buildStructure('Workshop')">
+              <div class="b-icon">🛠️</div>
+              <div class="b-name">Workshop</div>
+              <div class="b-cost">🪵 500</div>
+            </div>
+          </div>
+
+          <div class="build-categories-bar">
+            <button class="b-cat-btn active">RESOURCES</button>
+            <button class="b-cat-btn">DEFENSE</button>
+            <button class="b-cat-btn">PRODUCTION</button>
+            <button class="b-cat-btn">SUPPORT</button>
+            <button class="b-cat-btn">DECOR</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Panel 3: Wasteland Expedition Map Node Graph -->
+      <section class="panel-card bottom-panel-explore">
+        <div class="panel-header">
+          <span>EXPLORE</span>
+          <span class="sub-header-tag">TEAMS: 2/3</span>
+        </div>
+        <div class="panel-body map-body">
+          <!-- Interactive Node Graph Map -->
+          <div class="node-map-container">
+            <div class="map-node center-node">
+              <span>YOUR OUTPOST</span>
+            </div>
+
+            <div class="map-node node-ruins" onclick="selectExpedition('City Ruins')">
+              <strong>CITY RUINS</strong>
+              <span class="risk-tag high">RISK: HIGH</span>
+            </div>
+
+            <div class="map-node node-mall" onclick="selectExpedition('Shopping Mall')">
+              <strong>SHOPPING MALL</strong>
+              <span class="risk-tag medium">RISK: MEDIUM</span>
+            </div>
+
+            <div class="map-node node-hospital" onclick="selectExpedition('Hospital')">
+              <strong>HOSPITAL</strong>
+              <span class="risk-tag high">RISK: HIGH</span>
+            </div>
+
+            <div class="map-node node-forest" onclick="selectExpedition('Forest')">
+              <strong>FOREST</strong>
+              <span class="risk-tag low">RISK: LOW</span>
+            </div>
+
+            <div class="map-node node-military" onclick="selectExpedition('Military Base')">
+              <strong>MILITARY BASE</strong>
+              <span class="risk-tag vhigh">RISK: VERY HIGH</span>
+            </div>
+          </div>
+
+          <button class="pixel-btn green full-width" id="send-team-btn">SEND TEAM 🚁</button>
+        </div>
+      </section>
+
+      <!-- Bottom Panel 4: Offline Rewards -->
+      <section class="panel-card bottom-panel-offline">
+        <div class="panel-header">
+          <span>OFFLINE REWARDS</span>
+        </div>
+        <div class="panel-body">
+          <div class="away-label">YOU WERE AWAY FOR:<br><strong>🕒 12H 45M</strong></div>
+
+          <div class="rewards-compact-grid">
+            <div>🍞 FOOD: <strong>+2,350</strong></div>
+            <div>💧 WATER: <strong>+1,980</strong></div>
+            <div>🪵 WOOD: <strong>+1,200</strong></div>
+            <div>🪙 METAL: <strong>+980</strong></div>
+            <div>⛽ FUEL: <strong>+640</strong></div>
+            <div>⭐ EXP: <strong>+1,450</strong></div>
+          </div>
+
+          <button class="pixel-btn green full-width" id="claim-offline-btn">CLAIM 🎁</button>
+        </div>
+      </section>
+
+      <!-- Bottom Panel 5: Progression Stage Pipeline -->
+      <section class="panel-card bottom-panel-progression">
+        <div class="panel-header">
+          <span>PROGRESSION</span>
+        </div>
+        <div class="panel-body">
+          <div class="stage-timeline-list">
+            <div class="stage-item done"><span>ABANDONED CAMP</span> ✅</div>
+            <div class="stage-item done"><span>SMALL OUTPOST</span> ✅</div>
+            <div class="stage-item done active"><span>FORTIFIED BASE</span> ✅</div>
+            <div class="stage-item locked"><span>SURVIVOR TOWN</span> 🔒</div>
+            <div class="stage-item locked"><span>MILITARY FORTRESS</span> 🔒</div>
+            <div class="stage-item locked"><span>LAST HUMAN CITY</span> 🔒</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Walkie Talkie & Survivor Walking Parade Bar -->
+    <footer class="bottom-radio-bar">
+      <div class="walkie-widget">
+        <span class="walkie-icon">📻</span>
+        <div class="walkie-screen">
+          <span class="led-light green"></span>
+          <p class="walkie-quote">"We survived today. We build tomorrow. We reclaim the future."</p>
+        </div>
+      </div>
+
+      <!-- Walking Pixel Sprites Row -->
+      <div class="sprite-parade-track">
+        <span class="p-sprite">👨‍🔧</span>
+        <span class="p-sprite">👩‍🌾</span>
+        <span class="p-sprite">👨‍🏭</span>
+        <span class="p-sprite">👩‍⚕️</span>
+        <span class="p-sprite">🔥</span>
+        <span class="p-sprite z">🧟</span>
+        <span class="p-sprite z">🏃</span>
+        <span class="p-sprite z">🦎</span>
+        <span class="p-sprite z">🤢</span>
+        <span class="p-sprite z">🦍</span>
+        <span class="p-sprite z">👾</span>
+      </div>
+
+      <div class="action-buttons-group">
+        <button class="pixel-btn cream sm" id="speed-up-btn">⚡ 2X SPEED</button>
+        <button class="pixel-btn green sm" id="collect-all-btn">✨ COLLECT ($)</button>
+        <button class="pixel-btn red sm pulse" id="defend-btn">🚨 DEFEND (TURRET)</button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
